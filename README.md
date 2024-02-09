@@ -1,7 +1,7 @@
 # xb_line_chart
 折线图
 
-![image.png](https://upload-images.jianshu.io/upload_images/3597041-9d0fadcce85c1363.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](./line_chart.png)
 
 
 ```
@@ -85,7 +85,7 @@ class LineChart extends XBPage<LineChartVM> {
 环形图
 
 
-![image.png](https://upload-images.jianshu.io/upload_images/3597041-778807ab0bccfd4b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](./annulus_chart.png)
 
 
 ```
@@ -145,7 +145,7 @@ class AnnulusChart extends XBPage<AnnulusChartVM> {
 # xb_histogram_chart
 柱状图
 
-![image.png](https://upload-images.jianshu.io/upload_images/3597041-6c9cc4a0dbcbb0d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](./histogram_chart.png)
 
 
 ```
