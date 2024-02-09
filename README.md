@@ -1,7 +1,7 @@
 # xb_line_chart
 折线图
 
-![image.png](./line_chart.png)
+![image.png](https://raw.githubusercontent.com/huisedediao/xb_chart/main/line_chart.png)
 
 
 ```
@@ -85,7 +85,7 @@ class LineChart extends XBPage<LineChartVM> {
 环形图
 
 
-![image.png](./annulus_chart.png)
+![image.png](https://raw.githubusercontent.com/huisedediao/xb_chart/main/annulus_chart.png)
 
 
 ```
@@ -145,7 +145,7 @@ class AnnulusChart extends XBPage<AnnulusChartVM> {
 # xb_histogram_chart
 柱状图
 
-![image.png](./histogram_chart.png)
+![image.png](https://raw.githubusercontent.com/huisedediao/xb_chart/main/histogram_chart.png)
 
 
 ```
