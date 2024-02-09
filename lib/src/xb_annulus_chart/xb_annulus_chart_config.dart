@@ -3,16 +3,20 @@ import 'package:flutter/material.dart';
 import 'xb_annulus_chart_model.dart';
 import 'xb_annulus_chart_name_widget.dart';
 
+class XBAnnulusChartHoverBuilderRet {
+  final Widget hover;
+  final double width;
+  final double height;
+  XBAnnulusChartHoverBuilderRet(
+      {required this.hover, required this.width, required this.height});
+}
+
 typedef XBAnnulusBottomWidgetBuilder = Widget Function(
     List<XBAnnulusChartModel> models);
 typedef XBAnnulusOnSelected = void Function(
     XBAnnulusChartModel? model, Offset position);
 
-typedef XBAnnulusChartHoverBuilder = Widget Function(
-    XBAnnulusChartModel? model);
-typedef XBAnnulusChartHoverWidthGetter = double Function(
-    XBAnnulusChartModel? model);
-typedef XBAnnulusChartHoverHeightGetter = double Function(
+typedef XBAnnulusChartHoverBuilder = XBAnnulusChartHoverBuilderRet Function(
     XBAnnulusChartModel? model);
 
 const double xbAnnulusChartNameMarkWidth = 5;
@@ -30,7 +34,7 @@ double xbAnnulusChartTotal(List<XBAnnulusChartModel> models) {
   return ret;
 }
 
-Size xbAnnulusChartTextWidth(String text, TextStyle? style) {
+Size xbAnnulusChartTextSize(String text, TextStyle? style) {
   final textSpan = TextSpan(
     text: text,
     style: style,
@@ -85,38 +89,27 @@ Widget xbAnnulusChartDefBottomBuilder(List<XBAnnulusChartModel> models) {
   );
 }
 
-Widget xbAnnulusChartDefHoverBuilder(XBAnnulusChartModel? model) {
-  return ClipRRect(
-    borderRadius: BorderRadius.circular(5),
-    child: Container(
-      alignment: Alignment.center,
-      width: xbAnnulusChartTextWidth(xbAnnulusChartHoverContent(model),
-                  xbAnnulusChartDefHoverContentStyle)
-              .width +
-          xbAnnulusChartDefHoverPaddingH * 2,
-      height: xbAnnulusChartTextWidth(xbAnnulusChartHoverContent(model),
-                  xbAnnulusChartDefHoverContentStyle)
-              .height +
-          xbAnnulusChartDefHoverPaddingV * 2,
-      color: xbAnnulusChartDefHoverColor,
-      child: Text(
-        xbAnnulusChartHoverContent(model),
-        style: xbAnnulusChartDefHoverContentStyle,
+XBAnnulusChartHoverBuilderRet xbAnnulusChartDefHoverBuilder(
+    XBAnnulusChartModel? model) {
+  final content = xbAnnulusChartHoverContent(model);
+  final contentSize =
+      xbAnnulusChartTextSize(content, xbAnnulusChartDefHoverContentStyle);
+  final width = contentSize.width + xbAnnulusChartDefHoverPaddingH * 2;
+  final height = contentSize.height + xbAnnulusChartDefHoverPaddingV * 2;
+  return XBAnnulusChartHoverBuilderRet(
+      hover: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Container(
+          alignment: Alignment.center,
+          width: width,
+          height: height,
+          color: xbAnnulusChartDefHoverColor,
+          child: Text(
+            content,
+            style: xbAnnulusChartDefHoverContentStyle,
+          ),
+        ),
       ),
-    ),
-  );
-}
-
-double xbAnnulusChartDefHoverHeightGetter(XBAnnulusChartModel? model) {
-  return xbAnnulusChartTextWidth(xbAnnulusChartHoverContent(model),
-              xbAnnulusChartDefHoverContentStyle)
-          .height +
-      xbAnnulusChartDefHoverPaddingV * 2;
-}
-
-double xbAnnulusChartDefHoverWidthGetter(XBAnnulusChartModel? model) {
-  return xbAnnulusChartTextWidth(xbAnnulusChartHoverContent(model),
-              xbAnnulusChartDefHoverContentStyle)
-          .width +
-      xbAnnulusChartDefHoverPaddingH * 2;
+      width: width,
+      height: height);
 }

@@ -11,27 +11,17 @@ class XBAnnulusChart extends StatefulWidget {
   final List<XBAnnulusChartModel> models;
   final XBAnnulusBottomWidgetBuilder? bottomWidgetBuilder;
   final XBAnnulusChartHoverBuilder? hoverBuilder;
-  final XBAnnulusChartHoverWidthGetter? hoverWidthGetter;
-  final XBAnnulusChartHoverHeightGetter? hoverHeightGetter;
   final Color? hoverColor;
   const XBAnnulusChart(
       {required this.models,
       this.hoverBuilder,
-      this.hoverWidthGetter,
-      this.hoverHeightGetter,
       this.hoverColor,
       this.bottomWidgetBuilder,
       this.annulusRadius,
       super.key})
       : assert(
-            (hoverBuilder == null &&
-                    hoverWidthGetter == null &&
-                    hoverHeightGetter == null &&
-                    hoverColor == null) ||
-                (hoverBuilder != null &&
-                    hoverWidthGetter != null &&
-                    hoverHeightGetter != null &&
-                    hoverColor != null),
+            (hoverBuilder == null && hoverColor == null) ||
+                (hoverBuilder != null && hoverColor != null),
             "如果定制hover，需要全套定制");
 
   @override
@@ -66,6 +56,12 @@ class _XBAnnulusChartState extends State<XBAnnulusChart> {
 
   late double _dataWidth;
 
+  late XBAnnulusChartHoverBuilderRet builderRet;
+  double _hoverTopPosition = 0;
+  double _hoverLeftPosition = 0;
+  double _arrowPaddingLeftPositon = 0;
+  double _arrowPaddingRightPositon = 0;
+
   Widget _datas() {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -73,7 +69,9 @@ class _XBAnnulusChartState extends State<XBAnnulusChart> {
             ? widget.annulusRadius! * 2
             : constraints.maxWidth * 0.5;
         _dataWidth = w;
+
         return Stack(
+          alignment: Alignment.center,
           children: [
             XBAnnulusChartData(
               width: w,
@@ -83,31 +81,46 @@ class _XBAnnulusChartState extends State<XBAnnulusChart> {
                 setState(() {
                   _selectedModel = model;
                   _touchPosition = position;
+                  if (_selectedModel != null) {
+                    if (widget.hoverBuilder != null) {
+                      builderRet = widget.hoverBuilder!(_selectedModel);
+                    } else {
+                      builderRet =
+                          xbAnnulusChartDefHoverBuilder(_selectedModel);
+                    }
+                    _hoverTopPosition =
+                        _hoverTop(_touchPosition?.dy ?? 0, builderRet.height);
+                    _hoverLeftPosition =
+                        _hoverLeft(_touchPosition?.dx ?? 0, builderRet.width);
+                    _arrowPaddingLeftPositon = _arrowPaddingLeft(
+                        _touchPosition?.dx ?? 0, builderRet.width);
+                    _arrowPaddingRightPositon = _arrowPaddingRight(
+                        _touchPosition?.dx ?? 0, builderRet.width);
+                  }
                 });
               },
             ),
-            Visibility(
-              visible: _selectedModel != null,
-              child: Positioned(
-                  top: _hoverTop(_touchPosition?.dy ?? 0, _hoverHeight()),
-                  left: _hoverLeft(_touchPosition?.dx ?? 0, _hoverWidth()),
+            if (_selectedModel != null)
+              AnimatedPositioned(
+                  duration: const Duration(milliseconds: 300),
+                  top: _hoverTopPosition,
+                  left: _hoverLeftPosition,
                   child: IgnorePointer(
                       child: Column(
                     children: [
-                      _hover(),
+                      builderRet.hover,
                       Padding(
                         padding: EdgeInsets.only(
-                            left: _arrowPaddingLeft(
-                                _touchPosition?.dx ?? 0, _hoverWidth()),
-                            right: _arrowPaddingRight(
-                                _touchPosition?.dx ?? 0, _hoverWidth())),
+                            left: _arrowPaddingLeftPositon,
+                            right: _arrowPaddingRightPositon),
                         child: XBAnnulusChartArrow(
                           color: _hoverColor(),
                         ),
                       )
                     ],
-                  ))),
-            )
+                  )))
+            else
+              Container(),
           ],
         );
       },
@@ -119,27 +132,6 @@ class _XBAnnulusChartState extends State<XBAnnulusChart> {
       return widget.hoverColor!;
     }
     return xbAnnulusChartDefHoverColor;
-  }
-
-  double _hoverWidth() {
-    if (widget.hoverWidthGetter != null) {
-      return widget.hoverWidthGetter!(_selectedModel);
-    }
-    return xbAnnulusChartDefHoverWidthGetter(_selectedModel);
-  }
-
-  double _hoverHeight() {
-    if (widget.hoverHeightGetter != null) {
-      return widget.hoverHeightGetter!(_selectedModel);
-    }
-    return xbAnnulusChartDefHoverHeightGetter(_selectedModel);
-  }
-
-  Widget _hover() {
-    if (widget.hoverBuilder != null) {
-      return widget.hoverBuilder!(_selectedModel);
-    }
-    return xbAnnulusChartDefHoverBuilder(_selectedModel);
   }
 
   double _arrowPaddingLeft(double dx, double hoverWidth) {
