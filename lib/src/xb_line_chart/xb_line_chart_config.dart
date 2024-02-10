@@ -5,11 +5,17 @@ import 'package:flutter/material.dart';
 import 'xb_line_chart_model.dart';
 import 'xb_line_chart_name_widget.dart';
 
+class XBLineChartHoverBuilderRet {
+  final Widget hover;
+  final double width;
+  XBLineChartHoverBuilderRet({required this.hover, required this.width});
+}
+
 typedef XBLineChartOnHover = void Function(int? hoverIndex, double hoverDx);
-typedef XBLineChartHoverBuilder = Widget Function(
+typedef XBLineChartHoverBuilder = XBLineChartHoverBuilderRet Function(
     int? hoverIndex, double hoverDx, double maxHeight);
-typedef XBLineChartHoverWidthGetter = double Function(
-    int? hoverIndex, double hoverDx);
+// typedef XBLineChartHoverWidthGetter = double Function(
+//     int? hoverIndex, double hoverDx);
 
 enum XBLineChartNameLayout { scroll, wrap }
 
@@ -85,55 +91,62 @@ String xbLineChartDateStr(DateTime beginDate, int offset) {
   return dateStr;
 }
 
-double xbLineChartDefHoverWidthGetter(int? hoverIndex, double hoverDx) {
-  return xbLineChartDefHoverWidth;
-}
+// double xbLineChartDefHoverWidthGetter(int? hoverIndex, double hoverDx) {
+//   return xbLineChartDefHoverWidth;
+// }
 
-Widget xbLineChartDefHoverBuilder(int? hoverIndex, double hoverDx,
-    double maxHeight, DateTime beginDate, List<XBLineChartModel> models) {
+XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
+    int? hoverIndex,
+    double hoverDx,
+    double maxHeight,
+    DateTime beginDate,
+    List<XBLineChartModel> models) {
   if (hoverIndex == null) {
-    return Container();
+    return XBLineChartHoverBuilderRet(hover: Container(), width: 0);
   }
   double dateStrHeight = 20;
-  return ClipRRect(
-    borderRadius: BorderRadius.circular(10),
-    child: Container(
-      width: xbLineChartDefHoverWidth,
-      // constraints: BoxConstraints(maxHeight: maxHeight - dateStrHeight),
-      // constraints:
-      //     BoxConstraints(maxHeight: 70 - dateStrHeight),
-      color: Colors.black,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: dateStrHeight,
-              child: Text(
-                xbLineChartDateStr(beginDate, hoverIndex),
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-            Container(
-              constraints: BoxConstraints(maxHeight: maxHeight - dateStrHeight),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: List.generate(models.length, (index) {
-                    final model = models[index];
-                    final value = model.values[hoverIndex];
-
-                    return _hoverItem(
-                        color: model.color, name: model.name, value: value);
-                  }),
+  return XBLineChartHoverBuilderRet(
+      hover: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          width: xbLineChartDefHoverWidth,
+          // constraints: BoxConstraints(maxHeight: maxHeight - dateStrHeight),
+          // constraints:
+          //     BoxConstraints(maxHeight: 70 - dateStrHeight),
+          color: Colors.black,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: dateStrHeight,
+                  child: Text(
+                    xbLineChartDateStr(beginDate, hoverIndex),
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
-              ),
-            )
-          ],
+                Container(
+                  constraints:
+                      BoxConstraints(maxHeight: maxHeight - dateStrHeight),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: List.generate(models.length, (index) {
+                        final model = models[index];
+                        final value = model.values[hoverIndex];
+
+                        return _hoverItem(
+                            color: model.color, name: model.name, value: value);
+                      }),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
       ),
-    ),
-  );
+      width: xbLineChartDefHoverWidth);
 }
 
 Widget _hoverItem(

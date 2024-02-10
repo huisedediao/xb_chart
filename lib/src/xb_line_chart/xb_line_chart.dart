@@ -23,9 +23,6 @@ class XBLineChart extends StatefulWidget {
   /// 数据源
   List<XBLineChartModel> models;
 
-  /// 悬浮窗的宽度，用于控制悬浮窗显示的位置
-  final XBLineChartHoverWidthGetter? hoverWidthGetter;
-
   /// 悬浮窗的样式构建函数
   final XBLineChartHoverBuilder? hoverBuilder;
 
@@ -48,17 +45,12 @@ class XBLineChart extends StatefulWidget {
       required this.models,
       this.pointCountPerPage = 7,
       this.hoverBuilder,
-      this.hoverWidthGetter,
       this.namesPaddingLeft,
       this.leftTitlePaddingRight = 10,
       this.needNames = true,
       this.namesLayout = XBLineChartNameLayout.wrap,
       super.key})
-      : assert(leftTitleCount > 1, "XBLineChart error：左侧标题数至少为2个"),
-        assert(
-            (hoverWidthGetter != null && hoverBuilder != null) ||
-                (hoverWidthGetter == null && hoverBuilder == null),
-            "hoverBuilder必须全套定制") {
+      : assert(leftTitleCount > 1, "XBLineChart error：左侧标题数至少为2个") {
     if (models.isEmpty) {
       models = [
         XBLineChartModel(name: "暂无数据", color: Colors.transparent, values: [1])
@@ -190,6 +182,17 @@ class _XBLineChartState extends State<XBLineChart> {
         final double h = max(_painterHeight, constraints.maxHeight);
         final double w = max(_painterWidth, constraints.maxWidth);
 
+        late XBLineChartHoverBuilderRet ret;
+        if (_hoverIndex != null) {
+          if (widget.hoverBuilder != null) {
+            ret = widget.hoverBuilder!(
+                _hoverIndex, _hoverDx, constraints.maxHeight);
+          } else {
+            ret = xbLineChartDefHoverBuilder(_hoverIndex, _hoverDx,
+                constraints.maxHeight, widget.beginDate, widget.models);
+          }
+        }
+
         return Stack(
           children: [
             Container(
@@ -221,36 +224,22 @@ class _XBLineChartState extends State<XBLineChart> {
                 ),
               ),
             ),
-            Visibility(
-              visible: _hoverIndex != null,
-              child: Positioned(
+            if (_hoverIndex != null)
+              Positioned(
                 top: 0,
-                left: _hoverLeft,
-                child: _hover(constraints.maxHeight),
-              ),
-            )
+                left: _hoverLeft(ret.width),
+                child: ret.hover,
+              )
+            else
+              const SizedBox()
           ],
         );
       },
     );
   }
 
-  Widget _hover(maxHeight) {
-    if (widget.hoverBuilder != null) {
-      return widget.hoverBuilder!(_hoverIndex, _hoverDx, maxHeight);
-    }
-    return xbLineChartDefHoverBuilder(
-        _hoverIndex, _hoverDx, maxHeight, widget.beginDate, widget.models);
-  }
-
-  double get _hoverLeft {
+  double _hoverLeft(hoverWidth) {
     double padding = 0;
-    late double hoverWidth;
-    if (widget.hoverWidthGetter != null) {
-      hoverWidth = widget.hoverWidthGetter!(_hoverIndex, _hoverDx);
-    } else {
-      hoverWidth = xbLineChartDefHoverWidthGetter(_hoverIndex, _hoverDx);
-    }
     double ret = _hoverDx - hoverWidth * 0.5;
     if (ret < padding) {
       ret = padding;
