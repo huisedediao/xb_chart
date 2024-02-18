@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class XBHistogramItem extends StatelessWidget {
+class XBHistogramChartItem extends StatelessWidget {
   /// 0 - 1
   final double value;
   final double height;
   final Color? beginColor;
   final Color? endColor;
-  const XBHistogramItem(
+  const XBHistogramChartItem(
       {required this.value,
       required this.height,
       this.beginColor,

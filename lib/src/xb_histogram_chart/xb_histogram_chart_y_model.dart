@@ -1,5 +1,5 @@
-class XBHistogramYModel {
+class XBHistogramChartYModel {
   String name;
   double value;
-  XBHistogramYModel({required this.name, required this.value});
+  XBHistogramChartYModel({required this.name, required this.value});
 }

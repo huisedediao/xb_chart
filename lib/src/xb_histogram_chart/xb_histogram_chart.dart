@@ -5,9 +5,9 @@ import 'xb_histogram_chart_item.dart';
 import 'xb_histogram_chart_y_model.dart';
 
 // ignore: must_be_immutable
-class XBHistogram extends StatelessWidget {
+class XBHistogramChart extends StatelessWidget {
   /// 数据
-  final List<XBHistogramYModel> yModels;
+  final List<XBHistogramChartYModel> yModels;
 
   /// 除去0以外，底部文字的数量
   final int xAxisTitleCount;
@@ -36,7 +36,7 @@ class XBHistogram extends StatelessWidget {
   /// 底部文字的宽度，会自动计算
   late double bottomTitleWidth;
 
-  XBHistogram(
+  XBHistogramChart(
       {required this.yModels,
       this.xAxisTitleCount = 4,
       this.itemHeigth = 18,
@@ -46,7 +46,7 @@ class XBHistogram extends StatelessWidget {
       this.maxBottomTitleWidth = 100,
       super.key}) {
     if (yModels.isEmpty) {
-      yModels.add(XBHistogramYModel(name: "暂无数据", value: 0));
+      yModels.add(XBHistogramChartYModel(name: "暂无数据", value: 0));
     }
     xAxisTitlesList = caculateXAxisTitlesList();
     bottomTitleWidth = caculateMaxBottomTitleWidth();
@@ -123,7 +123,7 @@ class XBHistogram extends StatelessWidget {
       // color: Colors.red,
       child: Column(
         children: List.generate(yModels.length, (index) {
-          XBHistogramYModel yModel = yModels[index];
+          XBHistogramChartYModel yModel = yModels[index];
           return Padding(
             padding: EdgeInsets.only(
                 bottom: (index == yModels.length - 1) ? 0 : itemGap,
@@ -169,13 +169,13 @@ class XBHistogram extends StatelessWidget {
       // color: Colors.orange,
       child: Column(
         children: List.generate(yModels.length, (index) {
-          XBHistogramYModel yModel = yModels[index];
+          XBHistogramChartYModel yModel = yModels[index];
           return Padding(
             padding: EdgeInsets.only(
                 bottom: (index == yModels.length - 1) ? 0 : itemGap),
             child: Padding(
               padding: EdgeInsets.only(right: bottomTitleWidth * 0.5),
-              child: XBHistogramItem(
+              child: XBHistogramChartItem(
                   value: yModel.value / maxValue, height: itemHeigth),
             ),
           );
