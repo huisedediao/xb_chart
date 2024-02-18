@@ -1,6 +1,6 @@
 name: xb_chart
 description: 一个基于flutter的统计图组件
-version: 0.0.12
+version: 0.0.13
 homepage: https://github.com/huisedediao/xb_chart
 
 environment:
