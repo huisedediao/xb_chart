@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'xb_annulus_chart_hover_builder_ret.dart';
 import 'xb_annulus_chart_model.dart';
 import 'xb_annulus_chart_name_widget.dart';
-
-class XBAnnulusChartHoverBuilderRet {
-  final Widget hover;
-  final double width;
-  final double height;
-  XBAnnulusChartHoverBuilderRet(
-      {required this.hover, required this.width, required this.height});
-}
 
 typedef XBAnnulusBottomWidgetBuilder = Widget Function(
     List<XBAnnulusChartModel> models);

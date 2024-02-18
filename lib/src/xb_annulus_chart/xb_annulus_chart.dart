@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'xb_annulus_chart_arrow.dart';
 import 'xb_annulus_chart_config.dart';
 import 'xb_annulus_chart_data.dart';
+import 'xb_annulus_chart_hover_builder_ret.dart';
 import 'xb_annulus_chart_model.dart';
 
 class XBAnnulusChart extends StatefulWidget {

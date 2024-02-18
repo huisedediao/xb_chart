@@ -1,14 +1,9 @@
 // ignore_for_file: sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
+import 'xb_line_chart_hover_builder_ret.dart';
 import 'xb_line_chart_model.dart';
 import 'xb_line_chart_name_widget.dart';
-
-class XBLineChartHoverBuilderRet {
-  final Widget hover;
-  final double width;
-  XBLineChartHoverBuilderRet({required this.hover, required this.width});
-}
 
 typedef XBLineChartOnHover = void Function(int? hoverIndex, double hoverDx);
 typedef XBLineChartHoverBuilder = XBLineChartHoverBuilderRet Function(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'xb_line_chart_config.dart';
 import 'xb_line_chart_data.dart';
+import 'xb_line_chart_hover_builder_ret.dart';
 import 'xb_line_chart_model.dart';
 import 'xb_line_chart_name_widget.dart';
 

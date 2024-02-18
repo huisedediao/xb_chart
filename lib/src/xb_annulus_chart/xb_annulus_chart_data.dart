@@ -75,8 +75,8 @@ class _XBAnnulusChartDataState extends State<XBAnnulusChartData> {
           (widget.width / 2 - widget.strokeWidth / 2) * cos(midAngle);
       double centerY = (widget.height / 2) +
           (widget.height / 2 - widget.strokeWidth / 2) * sin(midAngle);
-      print(
-          "model.value:${model.value},startAngle:$startAngle,sweepAngle:$sweepAngle,startAngle + sweepAngle:${startAngle + sweepAngle},touchAngle:$touchAngle");
+      // print(
+      //     "model.value:${model.value},startAngle:$startAngle,sweepAngle:$sweepAngle,startAngle + sweepAngle:${startAngle + sweepAngle},touchAngle:$touchAngle");
       if (touchAngle >= startAngle && touchAngle <= (startAngle + sweepAngle) ||
           ((startAngle + sweepAngle > pi) &&
               touchAngle > -pi &&
