@@ -16,6 +16,7 @@ class XBLineChartData extends StatefulWidget {
   final double painterHeight;
   final XBLineChartOnHover onHover;
   final double dayGap;
+  final double datasExtensionSpace;
   const XBLineChartData(
       {required this.leftTitleCount,
       required this.beginDate,
@@ -27,6 +28,7 @@ class XBLineChartData extends StatefulWidget {
       required this.valueLineCount,
       required this.onHover,
       required this.dayGap,
+      required this.datasExtensionSpace,
       super.key});
 
   @override
@@ -43,7 +45,7 @@ class _XBLineChartDataState extends State<XBLineChartData> {
     double rangeLeft = _touchX! - range;
     double rangeRight = _touchX! + range;
     for (int i = 0; i < xbLineChartMaxValueCount(widget.models); i++) {
-      double x = i * widget.dayGap + xbLineChartDatasExtensionSpace;
+      double x = i * widget.dayGap + widget.datasExtensionSpace;
       if (x > rangeLeft && x < rangeRight) {
         return i;
       }
@@ -99,7 +101,8 @@ class _XBLineChartDataState extends State<XBLineChartData> {
                   lineCount: widget.valueLineCount,
                   beginDate: widget.beginDate,
                   touchX: _touchX,
-                  dayGap: widget.dayGap),
+                  dayGap: widget.dayGap,
+                  datasExtensionSpace: widget.datasExtensionSpace),
             ),
           ),
         ),
@@ -117,6 +120,7 @@ class XBDataPainter extends CustomPainter {
   final DateTime beginDate;
   final double? touchX;
   final double dayGap;
+  final double datasExtensionSpace;
   XBDataPainter(
       {required this.models,
       required this.max,
@@ -124,7 +128,8 @@ class XBDataPainter extends CustomPainter {
       required this.lineCount,
       required this.beginDate,
       required this.touchX,
-      required this.dayGap});
+      required this.dayGap,
+      required this.datasExtensionSpace});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -152,9 +157,7 @@ class XBDataPainter extends CustomPainter {
         const double verticalLineHeight = 7;
         paint.color = Colors.grey.withAlpha(40); // Or any color you prefer
 
-        for (double x = xbLineChartDatasExtensionSpace;
-            x <= size.width;
-            x += stepX) {
+        for (double x = datasExtensionSpace; x <= size.width; x += stepX) {
           final double topY = y - verticalLineHeight;
           canvas.drawLine(Offset(x, y), Offset(x, topY), paint);
         }
@@ -171,12 +174,12 @@ class XBDataPainter extends CustomPainter {
       double valueTextYOffset = 5;
       for (int i = 0; i < model.values.length - 1; i++) {
         final value = model.values[i];
-        final double x = i * stepX + xbLineChartDatasExtensionSpace;
+        final double x = i * stepX + datasExtensionSpace;
         final double ratio = value / max;
         final double y = minY + ratio * rangeY;
 
         final nextValue = model.values[i + 1];
-        final double nextX = (i + 1) * stepX + xbLineChartDatasExtensionSpace;
+        final double nextX = (i + 1) * stepX + datasExtensionSpace;
         final double nextRatio = nextValue / max;
         final double nextY = minY + nextRatio * rangeY;
 
@@ -210,7 +213,7 @@ class XBDataPainter extends CustomPainter {
       }
       final lastValue = model.values.last;
       final double lastX =
-          (model.values.length - 1) * stepX + xbLineChartDatasExtensionSpace;
+          (model.values.length - 1) * stepX + datasExtensionSpace;
       final double lastRatio = lastValue / max;
       final double lastY = minY + lastRatio * rangeY;
       canvas.drawCircle(Offset(lastX, lastY), valuePointW, paint);
@@ -231,7 +234,7 @@ class XBDataPainter extends CustomPainter {
     final double dateY = size.height - xbLineChartDateFontSize - 15;
     for (int i = 0; i < models[0].values.length; i += 3) {
       final dateStr = xbLineChartDateStr(beginDate, i);
-      final double x = i * stepX + xbLineChartDatasExtensionSpace;
+      final double x = i * stepX + datasExtensionSpace;
 
       TextPainter textPainter = TextPainter(
         text: TextSpan(

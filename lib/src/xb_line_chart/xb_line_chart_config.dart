@@ -16,9 +16,6 @@ typedef XBLineChartHoverBuilder = XBLineChartHoverBuilderRet Function(
 
 enum XBLineChartNameLayout { scroll, wrap }
 
-/// 数据点的横向扩展空间
-double xbLineChartDatasExtensionSpace = 0;
-
 /// 底部标题位置调整的参数
 const double xbLineChartBottomTitleFix = 10;
 
