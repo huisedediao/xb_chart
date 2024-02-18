@@ -23,11 +23,13 @@ class XBLineChartNameWidget extends StatelessWidget {
           color: color,
         ),
         const SizedBox(
-          width: 5,
+          width: xbLineChartNameMarkGap,
         ),
         Text(
           name,
-          style: TextStyle(fontSize: 12, color: textColor),
+          style: TextStyle(
+              color: textColor,
+              fontSize: xbLineChartNameWidgetTextStyle.fontSize),
         )
       ],
     );

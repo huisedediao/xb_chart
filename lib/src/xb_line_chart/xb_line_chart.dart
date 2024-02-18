@@ -107,24 +107,12 @@ class _XBLineChartState extends State<XBLineChart> {
     for (int i = 0; i < dayCount; i++) {
       final tempDataStr = xbLineChartDateStr(widget.beginDate, i);
       final tempDateStrLenHalf =
-          caculateTextWidth(tempDataStr, xbLineChartDateStrStyle) * 0.5;
+          xbLineChartCaculateTextWidth(tempDataStr, xbLineChartDateStrStyle) *
+              0.5;
       if (xbLineChartDatasExtensionSpace < tempDateStrLenHalf) {
         xbLineChartDatasExtensionSpace = tempDateStrLenHalf;
       }
     }
-    print(xbLineChartDatasExtensionSpace);
-  }
-
-  double caculateTextWidth(String value, TextStyle style) {
-    final textPainter = TextPainter(
-      text: TextSpan(text: value, style: style),
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout();
-
-    final size = textPainter.size;
-    final width = size.width;
-    return width;
   }
 
   @override

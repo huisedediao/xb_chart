@@ -34,14 +34,23 @@ const double xbLineChartLeftTitleHeight = 30;
 /// 标记点的大小
 const double xbLineChartNameMarkWidth = 5;
 
+/// 标记点和名字之间的间距
+const double xbLineChartNameMarkGap = 5;
+
 /// 左边标题纵向的扩展空间
 const double xbLineChartLeftTitleExtensionSpace = 15;
+
+/// hover item 名字和数值之间的间距
+const double xbLineChartDefHoverItemGap = 10;
 
 /// 默认的hover的宽度
 const double xbLineChartDefHoverWidth = 125;
 
 /// 日期的字体大小
 const double xbLineChartDateFontSize = 10;
+
+/// 名字的字体大小
+TextStyle xbLineChartNameWidgetTextStyle = const TextStyle(fontSize: 12);
 
 TextStyle xbLineChartDateStrStyle = const TextStyle(
     color: Color.fromARGB(255, 148, 146, 146),
@@ -105,24 +114,32 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
     return XBLineChartHoverBuilderRet(hover: Container(), width: 0);
   }
   double dateStrHeight = 20;
+  String dateStr = xbLineChartDateStr(beginDate, hoverIndex);
+  double padding = 8;
+  double maxWidth = xbLineChartCaculateTextWidth(dateStr, null);
+  for (var model in models) {
+    double tempWidth =
+        _hoverItemWidth(name: model.name, value: model.values[hoverIndex]);
+    if (tempWidth > maxWidth) {
+      maxWidth = tempWidth;
+    }
+  }
+  maxWidth = maxWidth + padding * 2;
   return XBLineChartHoverBuilderRet(
       hover: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          width: xbLineChartDefHoverWidth,
-          // constraints: BoxConstraints(maxHeight: maxHeight - dateStrHeight),
-          // constraints:
-          //     BoxConstraints(maxHeight: 70 - dateStrHeight),
+          width: maxWidth,
           color: Colors.black,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(padding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   height: dateStrHeight,
                   child: Text(
-                    xbLineChartDateStr(beginDate, hoverIndex),
+                    dateStr,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
@@ -134,7 +151,6 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
                       children: List.generate(models.length, (index) {
                         final model = models[index];
                         final value = model.values[hoverIndex];
-
                         return _hoverItem(
                             color: model.color, name: model.name, value: value);
                       }),
@@ -146,7 +162,16 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
           ),
         ),
       ),
-      width: xbLineChartDefHoverWidth);
+      width: maxWidth);
+}
+
+double _hoverItemWidth({required String name, required double value}) {
+  return xbLineChartNameMarkWidth +
+      xbLineChartNameMarkGap +
+      xbLineChartCaculateTextWidth(name, xbLineChartNameWidgetTextStyle) +
+      xbLineChartDefHoverItemGap +
+      xbLineChartCaculateTextWidth(
+          value.toStringAsFixed(0), xbLineChartNameWidgetTextStyle);
 }
 
 Widget _hoverItem(
@@ -159,12 +184,26 @@ Widget _hoverItem(
         name: name,
       ),
       const SizedBox(
-        width: 10,
+        width: xbLineChartDefHoverItemGap,
       ),
       Text(
         value.toStringAsFixed(0),
-        style: const TextStyle(color: Colors.white, fontSize: 12),
+        style: TextStyle(
+            color: Colors.white,
+            fontSize: xbLineChartNameWidgetTextStyle.fontSize),
       ),
     ],
   );
+}
+
+double xbLineChartCaculateTextWidth(String value, TextStyle? style) {
+  final textPainter = TextPainter(
+    text: TextSpan(text: value, style: style),
+    textDirection: TextDirection.ltr,
+  );
+  textPainter.layout();
+
+  final size = textPainter.size;
+  final width = size.width;
+  return width + 2;
 }
