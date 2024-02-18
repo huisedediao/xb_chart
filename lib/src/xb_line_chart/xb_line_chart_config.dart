@@ -1,7 +1,6 @@
 // ignore_for_file: sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
-
 import 'xb_line_chart_model.dart';
 import 'xb_line_chart_name_widget.dart';
 
@@ -14,8 +13,6 @@ class XBLineChartHoverBuilderRet {
 typedef XBLineChartOnHover = void Function(int? hoverIndex, double hoverDx);
 typedef XBLineChartHoverBuilder = XBLineChartHoverBuilderRet Function(
     int? hoverIndex, double hoverDx, double maxHeight);
-// typedef XBLineChartHoverWidthGetter = double Function(
-//     int? hoverIndex, double hoverDx);
 
 enum XBLineChartNameLayout { scroll, wrap }
 
@@ -42,9 +39,6 @@ const double xbLineChartLeftTitleExtensionSpace = 15;
 
 /// hover item 名字和数值之间的间距
 const double xbLineChartDefHoverItemGap = 10;
-
-/// 默认的hover的宽度
-const double xbLineChartDefHoverWidth = 125;
 
 /// 日期的字体大小
 const double xbLineChartDateFontSize = 10;
@@ -99,10 +93,6 @@ String xbLineChartDateStr(DateTime beginDate, int offset) {
   final dateStr = xbLineChartConvertDateToString(date);
   return dateStr;
 }
-
-// double xbLineChartDefHoverWidthGetter(int? hoverIndex, double hoverDx) {
-//   return xbLineChartDefHoverWidth;
-// }
 
 XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
     int? hoverIndex,
