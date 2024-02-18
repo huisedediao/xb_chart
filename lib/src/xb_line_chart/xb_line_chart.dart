@@ -72,10 +72,15 @@ class _XBLineChartState extends State<XBLineChart> {
   double get _maxValue => xbLineChartMaxValue(widget.models);
 
   List<int> get leftTitleContents {
-    if (_maxValue == 0 || widget.leftTitleCount < 1) return [];
-    int unit = (_maxValue / (widget.leftTitleCount - 1)).ceil();
-    if (unit == 0) {
+    if (widget.leftTitleCount < 1) return [];
+    int unit;
+    if (_maxValue == 0) {
       unit = 1;
+    } else {
+      unit = (_maxValue / (widget.leftTitleCount - 1)).ceil();
+      if (unit == 0) {
+        unit = 1;
+      }
     }
     return List.generate(widget.leftTitleCount, (index) {
       return unit * (widget.leftTitleCount - 1 - index);
