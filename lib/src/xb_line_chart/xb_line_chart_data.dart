@@ -15,6 +15,7 @@ class XBLineChartData extends StatefulWidget {
   final double painterWidth;
   final double painterHeight;
   final XBLineChartOnHover onHover;
+  final double dayGap;
   const XBLineChartData(
       {required this.leftTitleCount,
       required this.beginDate,
@@ -25,6 +26,7 @@ class XBLineChartData extends StatefulWidget {
       required this.painterHeight,
       required this.valueLineCount,
       required this.onHover,
+      required this.dayGap,
       super.key});
 
   @override
@@ -41,7 +43,7 @@ class _XBLineChartDataState extends State<XBLineChartData> {
     double rangeLeft = _touchX! - range;
     double rangeRight = _touchX! + range;
     for (int i = 0; i < xbLineChartMaxValueCount(widget.models); i++) {
-      double x = i * xbLineChartDayGap + xbLineChartDatasExtensionSpace;
+      double x = i * widget.dayGap + xbLineChartDatasExtensionSpace;
       if (x > rangeLeft && x < rangeRight) {
         return i;
       }
@@ -96,7 +98,8 @@ class _XBLineChartDataState extends State<XBLineChartData> {
                   min: widget.valueRangeMin,
                   lineCount: widget.valueLineCount,
                   beginDate: widget.beginDate,
-                  touchX: _touchX),
+                  touchX: _touchX,
+                  dayGap: widget.dayGap),
             ),
           ),
         ),
@@ -113,13 +116,15 @@ class XBDataPainter extends CustomPainter {
   final int lineCount;
   final DateTime beginDate;
   final double? touchX;
+  final double dayGap;
   XBDataPainter(
       {required this.models,
       required this.max,
       required this.min,
       required this.lineCount,
       required this.beginDate,
-      required this.touchX});
+      required this.touchX,
+      required this.dayGap});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -128,7 +133,7 @@ class XBDataPainter extends CustomPainter {
     final double minY = size.height - maxY - xbLineChartBottomTitleFix;
     final double rangeY = maxY - minY;
     final double stepY = rangeY / (lineCount - 1);
-    final double stepX = xbLineChartDayGap;
+    final double stepX = dayGap;
 
     var paint = Paint()
       ..color = Colors.grey.withAlpha(40)

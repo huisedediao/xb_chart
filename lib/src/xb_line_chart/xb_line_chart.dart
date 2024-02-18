@@ -67,6 +67,9 @@ class _XBLineChartState extends State<XBLineChart> {
   late double _maxDataWidth;
   double _hoverDx = 0;
   int? _hoverIndex;
+
+  /// 每天的间隔，根据外部传入的数值进行计算
+  double dayGap = 30;
   int get _maxCount => xbLineChartMaxValueCount(widget.models);
 
   double get _maxValue => xbLineChartMaxValue(widget.models);
@@ -94,8 +97,7 @@ class _XBLineChartState extends State<XBLineChart> {
   }
 
   double get _painterWidth {
-    return (_maxCount - 1) * xbLineChartDayGap +
-        xbLineChartDatasExtensionSpace * 2;
+    return (_maxCount - 1) * dayGap + xbLineChartDatasExtensionSpace * 2;
   }
 
   @override
@@ -166,9 +168,8 @@ class _XBLineChartState extends State<XBLineChart> {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         ///必须在最前面
-        xbLineChartDayGap =
-            (constraints.maxWidth - xbLineChartDatasExtensionSpace * 2) /
-                (widget.pointCountPerPage - 1);
+        dayGap = (constraints.maxWidth - xbLineChartDatasExtensionSpace * 2) /
+            (widget.pointCountPerPage - 1);
         _maxDataWidth = constraints.maxWidth;
         // print("maxWidth:${constraints.maxWidth}");
 
@@ -206,6 +207,7 @@ class _XBLineChartState extends State<XBLineChart> {
                     valueLineCount: leftTitleContents.length,
                     painterWidth: w,
                     painterHeight: h,
+                    dayGap: dayGap,
                     onHover: (int? hoverIndex, double dx) {
                       // print("globalDx:$dx,hoverIndex:$hoverIndex");
                       _hoverIndex = hoverIndex;

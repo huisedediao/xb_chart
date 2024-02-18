@@ -16,9 +16,6 @@ typedef XBLineChartHoverBuilder = XBLineChartHoverBuilderRet Function(
 
 enum XBLineChartNameLayout { scroll, wrap }
 
-/// 每天的间隔，根据外部传入的数值进行计算
-double xbLineChartDayGap = 30;
-
 /// 数据点的横向扩展空间
 double xbLineChartDatasExtensionSpace = 0;
 
