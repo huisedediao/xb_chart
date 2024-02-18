@@ -37,3 +37,7 @@
 ## 0.0.10
 
 -  optimize
+
+## 0.0.11
+
+-  修复lineChart默认hover日期显示不全

@@ -100,7 +100,8 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
   double dateStrHeight = 20;
   String dateStr = xbLineChartDateStr(beginDate, hoverIndex);
   double padding = 8;
-  double maxWidth = xbLineChartCaculateTextWidth(dateStr, null);
+  TextStyle dateStrStyle = const TextStyle(color: Colors.white, fontSize: 16);
+  double maxWidth = xbLineChartCaculateTextWidth(dateStr, dateStrStyle);
   for (var model in models) {
     double tempWidth =
         _hoverItemWidth(name: model.name, value: model.values[hoverIndex]);
@@ -116,7 +117,8 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
           width: maxWidth,
           color: Colors.black,
           child: Padding(
-            padding: EdgeInsets.all(padding),
+            padding:
+                EdgeInsets.only(top: padding, bottom: padding, left: padding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -124,7 +126,7 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
                   height: dateStrHeight,
                   child: Text(
                     dateStr,
-                    style: const TextStyle(color: Colors.white),
+                    style: dateStrStyle,
                   ),
                 ),
                 Container(
