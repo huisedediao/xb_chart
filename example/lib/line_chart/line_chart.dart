@@ -16,6 +16,12 @@ class LineChart extends XBPage<LineChartVM> {
     return "折线图demo";
   }
 
+  String dateStr(DateTime beginDate, int offset) {
+    final date = beginDate.add(Duration(days: offset));
+    final dateStr = xbLineChartConvertDateToString(date);
+    return dateStr;
+  }
+
   @override
   Widget buildPage(vm, BuildContext context) {
     final beginDate = DateTime.now();
@@ -49,6 +55,18 @@ class LineChart extends XBPage<LineChartVM> {
           color: Color.fromARGB(255, 26, 121, 76),
           values: [82, 120, 101, 56, 109, 187, 113, 235, 175])
     ];
+    int maxValuesCount = 0;
+    for (var element in models) {
+      final tempLen = element.values.length;
+      if (tempLen > maxValuesCount) {
+        maxValuesCount = tempLen;
+      }
+    }
+    List<XBLineChartXTitle> xTitles = [];
+    for (int i = 0; i < maxValuesCount; i++) {
+      xTitles.add(
+          XBLineChartXTitle(text: dateStr(beginDate, i), isShow: i % 2 == 0));
+    }
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -59,8 +77,8 @@ class LineChart extends XBPage<LineChartVM> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: XBLineChart(
-                leftTitleCount: 8,
-                beginDate: beginDate,
+                yTitleCount: 8,
+                xTitles: xTitles,
                 models: models,
               ),
             ),

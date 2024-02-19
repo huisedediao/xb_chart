@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 
 import 'xb_line_chart_config.dart';
 import 'xb_line_chart_model.dart';
+import 'xb_line_chart_x_title.dart';
 
 class XBLineChartData extends StatefulWidget {
   final int leftTitleCount;
-  final DateTime beginDate;
+  final List<XBLineChartXTitle> xTitles;
   final List<XBLineChartModel> models;
   final int valueRangeMax;
   final int valueRangeMin;
@@ -19,7 +20,7 @@ class XBLineChartData extends StatefulWidget {
   final double datasExtensionSpace;
   const XBLineChartData(
       {required this.leftTitleCount,
-      required this.beginDate,
+      required this.xTitles,
       required this.models,
       required this.valueRangeMax,
       required this.valueRangeMin,
@@ -99,7 +100,7 @@ class _XBLineChartDataState extends State<XBLineChartData> {
                   max: widget.valueRangeMax,
                   min: widget.valueRangeMin,
                   lineCount: widget.valueLineCount,
-                  beginDate: widget.beginDate,
+                  xTitles: widget.xTitles,
                   touchX: _touchX,
                   dayGap: widget.dayGap,
                   datasExtensionSpace: widget.datasExtensionSpace),
@@ -117,7 +118,7 @@ class XBDataPainter extends CustomPainter {
   final int min;
 
   final int lineCount;
-  final DateTime beginDate;
+  final List<XBLineChartXTitle> xTitles;
   final double? touchX;
   final double dayGap;
   final double datasExtensionSpace;
@@ -126,7 +127,7 @@ class XBDataPainter extends CustomPainter {
       required this.max,
       required this.min,
       required this.lineCount,
-      required this.beginDate,
+      required this.xTitles,
       required this.touchX,
       required this.dayGap,
       required this.datasExtensionSpace});
@@ -232,20 +233,23 @@ class XBDataPainter extends CustomPainter {
 
     // Draw dates
     final double dateY = size.height - xbLineChartDateFontSize - 15;
-    for (int i = 0; i < models[0].values.length; i += 3) {
-      final dateStr = xbLineChartDateStr(beginDate, i);
-      final double x = i * stepX + datasExtensionSpace;
+    for (int i = 0; i < xTitles.length; i++) {
+      final dateStr = xTitles[i];
 
-      TextPainter textPainter = TextPainter(
-        text: TextSpan(
-          text: dateStr,
-          style:
-              xbLineChartDateStrStyle, // Change the color and font size to your preference
-        ),
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
-      textPainter.paint(canvas, Offset(x - textPainter.width * 0.5, dateY));
+      if (dateStr.isShow) {
+        final double x = i * stepX + datasExtensionSpace;
+
+        TextPainter textPainter = TextPainter(
+          text: TextSpan(
+            text: dateStr.text,
+            style:
+                xbLineChartDateStrStyle, // Change the color and font size to your preference
+          ),
+          textDirection: TextDirection.ltr,
+        );
+        textPainter.layout();
+        textPainter.paint(canvas, Offset(x - textPainter.width * 0.5, dateY));
+      }
     }
     // 在手指触摸的位置画线
     if (touchX != null) {

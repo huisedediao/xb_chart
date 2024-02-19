@@ -6,17 +6,18 @@ import 'xb_line_chart_data.dart';
 import 'xb_line_chart_hover_builder_ret.dart';
 import 'xb_line_chart_model.dart';
 import 'xb_line_chart_name_widget.dart';
+import 'xb_line_chart_x_title.dart';
 
 // ignore: must_be_immutable
 class XBLineChart extends StatefulWidget {
   /// 左侧标题的数量，默认为8个
-  final int leftTitleCount;
+  final int yTitleCount;
 
   /// 左侧标题的宽度，默认为50
-  final double leftTitleWidth;
+  final double yTitleWidth;
 
-  /// 开始日期，后面每一个点在此基础上增加1天
-  final DateTime beginDate;
+  /// x轴上的文字
+  final List<XBLineChartXTitle> xTitles;
 
   /// 每页，横向要显示几个点，默认7个
   final int pointCountPerPage;
@@ -40,9 +41,9 @@ class XBLineChart extends StatefulWidget {
   final double leftTitlePaddingRight;
 
   XBLineChart(
-      {this.leftTitleCount = 8,
-      this.leftTitleWidth = 50,
-      required this.beginDate,
+      {this.yTitleCount = 8,
+      this.yTitleWidth = 50,
+      required this.xTitles,
       required this.models,
       this.pointCountPerPage = 7,
       this.hoverBuilder,
@@ -51,7 +52,7 @@ class XBLineChart extends StatefulWidget {
       this.needNames = true,
       this.namesLayout = XBLineChartNameLayout.wrap,
       super.key})
-      : assert(leftTitleCount > 1, "XBLineChart error：左侧标题数至少为2个") {
+      : assert(yTitleCount > 1, "XBLineChart error：左侧标题数至少为2个") {
     if (models.isEmpty) {
       models = [
         XBLineChartModel(name: "暂无数据", color: Colors.transparent, values: [1])
@@ -80,23 +81,23 @@ class _XBLineChartState extends State<XBLineChart> {
   double get _maxValue => xbLineChartMaxValue(widget.models);
 
   List<int> get leftTitleContents {
-    if (widget.leftTitleCount < 1) return [];
+    if (widget.yTitleCount < 1) return [];
     int unit;
     if (_maxValue == 0) {
       unit = 1;
     } else {
-      unit = (_maxValue / (widget.leftTitleCount - 1)).ceil();
+      unit = (_maxValue / (widget.yTitleCount - 1)).ceil();
       if (unit == 0) {
         unit = 1;
       }
     }
-    return List.generate(widget.leftTitleCount, (index) {
-      return unit * (widget.leftTitleCount - 1 - index);
+    return List.generate(widget.yTitleCount, (index) {
+      return unit * (widget.yTitleCount - 1 - index);
     });
   }
 
   double get _painterHeight {
-    return widget.leftTitleCount * xbLineChartLeftTitleHeight +
+    return widget.yTitleCount * xbLineChartLeftTitleHeight +
         xbLineChartLeftTitleExtensionSpace * 2 +
         xbLineChartBottomTitleFix;
   }
@@ -109,15 +110,13 @@ class _XBLineChartState extends State<XBLineChart> {
   void initState() {
     super.initState();
 
-    /// 计算XBLineChartDatasExtensionSpace
-    final dayCount = xbLineChartMaxValueCount(widget.models);
-    for (int i = 0; i < dayCount; i++) {
-      final tempDataStr = xbLineChartDateStr(widget.beginDate, i);
-      final tempDateStrLenHalf =
-          xbLineChartCaculateTextWidth(tempDataStr, xbLineChartDateStrStyle) *
-              0.5;
-      if (datasExtensionSpace < tempDateStrLenHalf) {
-        datasExtensionSpace = tempDateStrLenHalf;
+    /// 计算datasExtensionSpace
+    for (var tempTitle in widget.xTitles) {
+      final tempStrLenHalf = xbLineChartCaculateTextWidth(
+              tempTitle.text, xbLineChartDateStrStyle) *
+          0.5;
+      if (datasExtensionSpace < tempStrLenHalf) {
+        datasExtensionSpace = tempStrLenHalf;
       }
     }
   }
@@ -150,7 +149,7 @@ class _XBLineChartState extends State<XBLineChart> {
             top: xbLineChartLeftTitleExtensionSpace,
             right: widget.leftTitlePaddingRight),
         child: Container(
-          width: widget.leftTitleWidth,
+          width: widget.yTitleWidth,
           // color: Colors.red,
           child: Column(
             children: List.generate(leftTitleContents.length, (index) {
@@ -187,8 +186,12 @@ class _XBLineChartState extends State<XBLineChart> {
             ret = widget.hoverBuilder!(
                 _hoverIndex, _hoverDx, constraints.maxHeight);
           } else {
-            ret = xbLineChartDefHoverBuilder(_hoverIndex, _hoverDx,
-                constraints.maxHeight, widget.beginDate, widget.models);
+            ret = xbLineChartDefHoverBuilder(
+                _hoverIndex,
+                _hoverDx,
+                constraints.maxHeight,
+                widget.xTitles[_hoverIndex!].text,
+                widget.models);
           }
         }
 
@@ -204,8 +207,8 @@ class _XBLineChartState extends State<XBLineChart> {
                   width: w,
                   height: h,
                   child: XBLineChartData(
-                    leftTitleCount: widget.leftTitleCount,
-                    beginDate: widget.beginDate,
+                    leftTitleCount: widget.yTitleCount,
+                    xTitles: widget.xTitles,
                     models: widget.models,
                     valueRangeMax: leftTitleContents.first,
                     valueRangeMin: leftTitleContents.last,

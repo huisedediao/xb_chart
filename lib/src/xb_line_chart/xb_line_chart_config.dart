@@ -87,13 +87,12 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
     int? hoverIndex,
     double hoverDx,
     double maxHeight,
-    DateTime beginDate,
+    String dateStr,
     List<XBLineChartModel> models) {
   if (hoverIndex == null) {
     return XBLineChartHoverBuilderRet(hover: Container(), width: 0);
   }
   double dateStrHeight = 20;
-  String dateStr = xbLineChartDateStr(beginDate, hoverIndex);
   double padding = 8;
   TextStyle dateStrStyle = const TextStyle(color: Colors.white, fontSize: 16);
   double maxWidth = xbLineChartCaculateTextWidth(dateStr, dateStrStyle);

@@ -5,11 +5,10 @@
 
 
 ```
+import 'package:example/line_chart/line_chart_vm.dart';
 import 'package:flutter/material.dart';
-import 'package:xb_custom_widget_cabin/line_chart/line_chart_vm.dart';
-import 'package:xb_custom_widget_cabin/line_chart/xb_line_chart/xb_line_chart.dart';
-import 'package:xb_custom_widget_cabin/line_chart/xb_line_chart/xb_line_chart_model.dart';
 import 'package:xb_scaffold/xb_scaffold.dart';
+import 'package:xb_chart/xb_chart.dart';
 
 class LineChart extends XBPage<LineChartVM> {
   const LineChart({super.key});
@@ -22,6 +21,12 @@ class LineChart extends XBPage<LineChartVM> {
   @override
   String setTitle(LineChartVM vm) {
     return "折线图demo";
+  }
+
+  String dateStr(DateTime beginDate, int offset) {
+    final date = beginDate.add(Duration(days: offset));
+    final dateStr = xbLineChartConvertDateToString(date);
+    return dateStr;
   }
 
   @override
@@ -57,6 +62,18 @@ class LineChart extends XBPage<LineChartVM> {
           color: Color.fromARGB(255, 26, 121, 76),
           values: [82, 120, 101, 56, 109, 187, 113, 235, 175])
     ];
+    int maxValuesCount = 0;
+    for (var element in models) {
+      final tempLen = element.values.length;
+      if (tempLen > maxValuesCount) {
+        maxValuesCount = tempLen;
+      }
+    }
+    List<XBLineChartXTitle> xTitles = [];
+    for (int i = 0; i < maxValuesCount; i++) {
+      xTitles.add(
+          XBLineChartXTitle(text: dateStr(beginDate, i), isShow: i % 2 == 0));
+    }
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -67,8 +84,8 @@ class LineChart extends XBPage<LineChartVM> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: XBLineChart(
-                leftTitleCount: 8,
-                beginDate: beginDate,
+                yTitleCount: 8,
+                xTitles: xTitles,
                 models: models,
               ),
             ),
@@ -78,6 +95,7 @@ class LineChart extends XBPage<LineChartVM> {
     );
   }
 }
+
 
 ```
 
