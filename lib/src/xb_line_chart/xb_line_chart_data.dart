@@ -18,6 +18,7 @@ class XBLineChartData extends StatefulWidget {
   final XBLineChartOnHover onHover;
   final double dayGap;
   final double datasExtensionSpace;
+  final int fractionDigits;
   const XBLineChartData(
       {required this.leftTitleCount,
       required this.xTitles,
@@ -30,6 +31,7 @@ class XBLineChartData extends StatefulWidget {
       required this.onHover,
       required this.dayGap,
       required this.datasExtensionSpace,
+      required this.fractionDigits,
       super.key});
 
   @override
@@ -103,7 +105,8 @@ class _XBLineChartDataState extends State<XBLineChartData> {
                   xTitles: widget.xTitles,
                   touchX: _touchX,
                   dayGap: widget.dayGap,
-                  datasExtensionSpace: widget.datasExtensionSpace),
+                  datasExtensionSpace: widget.datasExtensionSpace,
+                  fractionDigits: widget.fractionDigits),
             ),
           ),
         ),
@@ -122,6 +125,7 @@ class XBDataPainter extends CustomPainter {
   final double? touchX;
   final double dayGap;
   final double datasExtensionSpace;
+  final int fractionDigits;
   XBDataPainter(
       {required this.models,
       required this.max,
@@ -130,7 +134,8 @@ class XBDataPainter extends CustomPainter {
       required this.xTitles,
       required this.touchX,
       required this.dayGap,
-      required this.datasExtensionSpace});
+      required this.datasExtensionSpace,
+      required this.fractionDigits});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -198,7 +203,7 @@ class XBDataPainter extends CustomPainter {
         // Draw value text
         TextPainter textPainter = TextPainter(
           text: TextSpan(
-            text: value.toString(),
+            text: value.toStringAsFixed(fractionDigits),
             style: TextStyle(color: model.color, fontSize: fontSize),
           ),
           textDirection: TextDirection.ltr,
@@ -221,7 +226,7 @@ class XBDataPainter extends CustomPainter {
 
       TextPainter textPainter = TextPainter(
         text: TextSpan(
-          text: lastValue.toString(),
+          text: lastValue.toStringAsFixed(fractionDigits),
           style: TextStyle(color: model.color, fontSize: fontSize),
         ),
         textDirection: TextDirection.ltr,

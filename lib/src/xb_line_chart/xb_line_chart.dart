@@ -40,6 +40,9 @@ class XBLineChart extends StatefulWidget {
   /// 左侧标题和图表的间距，默认10
   final double leftTitlePaddingRight;
 
+  /// 折线图中的值，取几位小数，默认0
+  final int fractionDigits;
+
   XBLineChart(
       {this.yTitleCount = 8,
       this.yTitleWidth = 50,
@@ -51,6 +54,7 @@ class XBLineChart extends StatefulWidget {
       this.leftTitlePaddingRight = 10,
       this.needNames = true,
       this.namesLayout = XBLineChartNameLayout.wrap,
+      this.fractionDigits = 0,
       super.key})
       : assert(yTitleCount > 1, "XBLineChart error：左侧标题数至少为2个") {
     if (models.isEmpty) {
@@ -216,6 +220,7 @@ class _XBLineChartState extends State<XBLineChart> {
                     painterWidth: w,
                     painterHeight: h,
                     dayGap: dayGap,
+                    fractionDigits: widget.fractionDigits,
                     datasExtensionSpace: datasExtensionSpace,
                     onHover: (int? hoverIndex, double dx) {
                       // print("globalDx:$dx,hoverIndex:$hoverIndex");

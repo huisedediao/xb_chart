@@ -76,11 +76,8 @@ class LineChart extends XBPage<LineChartVM> {
             color: Colors.white,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: XBLineChart(
-                yTitleCount: 8,
-                xTitles: xTitles,
-                models: models,
-              ),
+              child:
+                  XBLineChart(yTitleCount: 8, xTitles: xTitles, models: models),
             ),
           ),
         ),
