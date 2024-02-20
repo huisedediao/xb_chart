@@ -212,7 +212,7 @@ class XBDataPainter extends CustomPainter {
         textPainter.paint(
             canvas,
             Offset(
-                x - fontSize,
+                x - textPainter.width * 0.5,
                 y -
                     fontSize -
                     valueTextYOffset)); // Adjust the offset according to your needs
@@ -232,8 +232,10 @@ class XBDataPainter extends CustomPainter {
         textDirection: TextDirection.ltr,
       );
       textPainter.layout();
-      textPainter.paint(canvas,
-          Offset(lastX - fontSize, lastY - fontSize - valueTextYOffset));
+      textPainter.paint(
+          canvas,
+          Offset(lastX - textPainter.width * 0.5,
+              lastY - fontSize - valueTextYOffset));
     }
 
     // Draw dates
