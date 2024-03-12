@@ -70,7 +70,9 @@ Widget xbAnnulusChartDefBottomBuilder(List<XBAnnulusChartModel> models) {
                   name: model.name,
                   textColor: model.isSelected ? model.color : Colors.black,
                   value: '${model.value.toStringAsFixed(0)}次',
-                  scale: '${(model.value / total * 100).toStringAsFixed(2)}%',
+                  scale: total == 0
+                      ? '0.00%'
+                      : '${(model.value / total * 100).toStringAsFixed(2)}%',
                 ),
               ),
             );
