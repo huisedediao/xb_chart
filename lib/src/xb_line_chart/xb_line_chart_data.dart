@@ -270,6 +270,6 @@ class XBDataPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(XBDataPainter oldDelegate) {
-    return oldDelegate.touchX != touchX;
+    return true;
   }
 }

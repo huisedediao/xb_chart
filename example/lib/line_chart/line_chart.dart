@@ -16,57 +16,8 @@ class LineChart extends XBPage<LineChartVM> {
     return "折线图demo";
   }
 
-  String dateStr(DateTime beginDate, int offset) {
-    final date = beginDate.add(Duration(days: offset));
-    final dateStr = xbLineChartConvertDateToString(date);
-    return dateStr;
-  }
-
   @override
   Widget buildPage(vm, BuildContext context) {
-    final beginDate = DateTime.now();
-    final models = [
-      XBLineChartModel(
-          name: '张益达',
-          color: Colors.orange,
-          values: [10, 20, 1, 95, 38, 109, 127, 18, 98]),
-      XBLineChartModel(
-          name: '吕小布',
-          color: Colors.green,
-          values: [11, 26, 21, 35, 78, 19, 172, 22, 31]),
-      XBLineChartModel(
-          name: '曾小贤',
-          color: Colors.blue,
-          values: [57, 46, 100, 139, 88, 49, 72, 112, 21]),
-      XBLineChartModel(
-          name: '吴彦祖',
-          color: Colors.greenAccent,
-          values: [75, 64, 103, 39, 198, 219, 28, 122, 88]),
-      XBLineChartModel(
-          name: '张震',
-          color: Colors.deepPurple,
-          values: [35, 74, 93, 31, 34, 19, 18, 133, 188]),
-      XBLineChartModel(
-          name: '金城武',
-          color: Color.fromARGB(255, 156, 154, 157),
-          values: [78, 49, 27, 67, 36, 87, 103, 135, 75]),
-      XBLineChartModel(
-          name: '程冠希',
-          color: Color.fromARGB(255, 26, 121, 76),
-          values: [82, 120, 101, 56, 109, 187, 113, 235, 175])
-    ];
-    int maxValuesCount = 0;
-    for (var element in models) {
-      final tempLen = element.values.length;
-      if (tempLen > maxValuesCount) {
-        maxValuesCount = tempLen;
-      }
-    }
-    List<XBLineChartXTitle> xTitles = [];
-    for (int i = 0; i < maxValuesCount; i++) {
-      xTitles.add(
-          XBLineChartXTitle(text: dateStr(beginDate, i), isShow: i % 2 == 0));
-    }
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -74,10 +25,26 @@ class LineChart extends XBPage<LineChartVM> {
           borderRadius: BorderRadius.circular(10),
           child: Container(
             color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child:
-                  XBLineChart(yTitleCount: 8, xTitles: xTitles, models: models),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: XBLineChart(
+                      yTitleCount: 8, xTitles: vm.xTitles, models: vm.models),
+                ),
+                XBButton(
+                    onTap: () {
+                      vm.selectedIndex = vm.selectedIndex == 0 ? 1 : 0;
+                      vm.notify();
+                    },
+                    child: Container(
+                      color: Colors.red,
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("切换数据"),
+                      ),
+                    ))
+              ],
             ),
           ),
         ),
