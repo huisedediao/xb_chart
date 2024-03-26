@@ -43,6 +43,21 @@ class XBLineChart extends StatefulWidget {
   /// 折线图中的值，取几位小数，默认0
   final int fractionDigits;
 
+  /// 触摸时展示的线条的颜色
+  final Color touchLineColor;
+
+  /// 折线的宽度
+  final double lineWidth;
+
+  /// 折线圆点的半径
+  final double circleRadius;
+
+  /// 折线中数值的字体大小
+  final double valueFontSize;
+
+  /// 折线中数值的字重
+  final FontWeight valueFontWeight;
+
   XBLineChart(
       {this.yTitleCount = 8,
       this.yTitleWidth = 50,
@@ -55,6 +70,11 @@ class XBLineChart extends StatefulWidget {
       this.needNames = true,
       this.namesLayout = XBLineChartNameLayout.wrap,
       this.fractionDigits = 0,
+      this.touchLineColor = Colors.grey,
+      this.lineWidth = 2.5,
+      this.circleRadius = 2.5,
+      this.valueFontSize = 12,
+      this.valueFontWeight = FontWeight.w600,
       super.key})
       : assert(yTitleCount > 1, "XBLineChart error：左侧标题数至少为2个") {
     if (models.isEmpty) {
@@ -222,6 +242,11 @@ class _XBLineChartState extends State<XBLineChart> {
                     dayGap: dayGap,
                     fractionDigits: widget.fractionDigits,
                     datasExtensionSpace: datasExtensionSpace,
+                    touchLineColor: widget.touchLineColor,
+                    lineWidth: widget.lineWidth,
+                    circleRadius: widget.circleRadius,
+                    valueFontSize: widget.valueFontSize,
+                    valueFontWeight: widget.valueFontWeight,
                     onHover: (int? hoverIndex, double dx) {
                       // print("globalDx:$dx,hoverIndex:$hoverIndex");
                       _hoverIndex = hoverIndex;

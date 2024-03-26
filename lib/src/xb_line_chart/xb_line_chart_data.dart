@@ -1,10 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'dart:math';
 import 'package:flutter/material.dart';
-
 import 'xb_line_chart_config.dart';
 import 'xb_line_chart_model.dart';
 import 'xb_line_chart_x_title.dart';
+import 'dart:ui' as ui;
 
 class XBLineChartData extends StatefulWidget {
   final int leftTitleCount;
@@ -19,6 +20,11 @@ class XBLineChartData extends StatefulWidget {
   final double dayGap;
   final double datasExtensionSpace;
   final int fractionDigits;
+  final Color touchLineColor;
+  final double lineWidth;
+  final double circleRadius;
+  final double valueFontSize;
+  final FontWeight valueFontWeight;
   const XBLineChartData(
       {required this.leftTitleCount,
       required this.xTitles,
@@ -32,6 +38,11 @@ class XBLineChartData extends StatefulWidget {
       required this.dayGap,
       required this.datasExtensionSpace,
       required this.fractionDigits,
+      required this.touchLineColor,
+      required this.lineWidth,
+      required this.circleRadius,
+      required this.valueFontSize,
+      required this.valueFontWeight,
       super.key});
 
   @override
@@ -106,7 +117,12 @@ class _XBLineChartDataState extends State<XBLineChartData> {
                   touchX: _touchX,
                   dayGap: widget.dayGap,
                   datasExtensionSpace: widget.datasExtensionSpace,
-                  fractionDigits: widget.fractionDigits),
+                  fractionDigits: widget.fractionDigits,
+                  touchLineColor: widget.touchLineColor,
+                  lineWidth: widget.lineWidth,
+                  circleRadius: widget.circleRadius,
+                  valueFontSize: widget.valueFontSize,
+                  valueFontWeight: widget.valueFontWeight),
             ),
           ),
         ),
@@ -119,13 +135,17 @@ class XBDataPainter extends CustomPainter {
   final List<XBLineChartModel> models;
   final int max;
   final int min;
-
   final int lineCount;
   final List<XBLineChartXTitle> xTitles;
   final double? touchX;
   final double dayGap;
   final double datasExtensionSpace;
   final int fractionDigits;
+  final Color touchLineColor;
+  final double lineWidth;
+  final double circleRadius;
+  final double valueFontSize;
+  final FontWeight valueFontWeight;
   XBDataPainter(
       {required this.models,
       required this.max,
@@ -135,7 +155,12 @@ class XBDataPainter extends CustomPainter {
       required this.touchX,
       required this.dayGap,
       required this.datasExtensionSpace,
-      required this.fractionDigits});
+      required this.fractionDigits,
+      required this.touchLineColor,
+      required this.lineWidth,
+      required this.circleRadius,
+      required this.valueFontSize,
+      required this.valueFontWeight});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -150,9 +175,6 @@ class XBDataPainter extends CustomPainter {
       ..color = Colors.grey.withAlpha(40)
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
-
-    // canvas.drawLine(Offset(0, maxY), Offset(size.width, maxY), paint);
-    // canvas.drawLine(Offset(0, minY), Offset(size.width, minY), paint);
 
     for (int i = 0; i < lineCount; i++) {
       final double y = maxY - i * stepY;
@@ -172,11 +194,13 @@ class XBDataPainter extends CustomPainter {
       }
     }
 
+    paint.strokeWidth = lineWidth;
+
     // Draw values
     for (final model in models) {
       paint.color = model.color;
-      double fontSize = 10;
-      double valuePointW = 2;
+      double fontSize = valueFontSize;
+      double valuePointW = circleRadius;
       double valueTextYOffset = 5;
       for (int i = 0; i < model.values.length - 1; i++) {
         final value = model.values[i];
@@ -189,22 +213,28 @@ class XBDataPainter extends CustomPainter {
         final double nextRatio = nextValue / max;
         final double nextY = minY + nextRatio * rangeY;
 
-        canvas.drawCircle(Offset(x, y), valuePointW, paint);
-        canvas.drawLine(Offset(x, y), Offset(nextX, nextY), paint);
+        final double circleRadius = valuePointW;
+        final double lineStartX =
+            x + circleRadius * cos(atan2(nextY - y, nextX - x));
+        final double lineStartY =
+            y + circleRadius * sin(atan2(nextY - y, nextX - x));
+        final double lineEndX =
+            nextX - circleRadius * cos(atan2(nextY - y, nextX - x));
+        final double lineEndY =
+            nextY - circleRadius * sin(atan2(nextY - y, nextX - x));
 
-        // Draw vertical line
-        // paint.color =
-        //     Color.fromARGB(255, 236, 235, 235); // Or any color you prefer
-        // canvas.drawLine(Offset(x, minY - 5), Offset(x, minY), paint);
-        // // canvas.drawLine(
-        // //     Offset(x, y), Offset(x, minY), paint); // Draw vertical line
-        // paint.color = model.color; // Change the color back to the original
+        canvas.drawCircle(Offset(x, y), circleRadius, paint);
+        canvas.drawLine(
+            Offset(lineStartX, lineStartY), Offset(lineEndX, lineEndY), paint);
 
         // Draw value text
         TextPainter textPainter = TextPainter(
           text: TextSpan(
             text: value.toStringAsFixed(fractionDigits),
-            style: TextStyle(color: model.color, fontSize: fontSize),
+            style: TextStyle(
+                color: model.color,
+                fontSize: fontSize,
+                fontWeight: valueFontWeight),
           ),
           textDirection: TextDirection.ltr,
         );
@@ -216,6 +246,14 @@ class XBDataPainter extends CustomPainter {
                 y -
                     fontSize -
                     valueTextYOffset)); // Adjust the offset according to your needs
+        _drawShadow(
+            canvas: canvas,
+            fontSize: fontSize,
+            value: value,
+            x: x,
+            y: y,
+            textPainter: textPainter,
+            valueTextYOffset: valueTextYOffset);
       }
       final lastValue = model.values.last;
       final double lastX =
@@ -236,6 +274,15 @@ class XBDataPainter extends CustomPainter {
           canvas,
           Offset(lastX - textPainter.width * 0.5,
               lastY - fontSize - valueTextYOffset));
+
+      _drawShadow(
+          canvas: canvas,
+          fontSize: fontSize,
+          value: lastValue,
+          x: lastX,
+          y: lastY,
+          textPainter: textPainter,
+          valueTextYOffset: valueTextYOffset);
     }
 
     // Draw dates
@@ -260,12 +307,69 @@ class XBDataPainter extends CustomPainter {
     }
     // 在手指触摸的位置画线
     if (touchX != null) {
-      paint = Paint()
-        ..color = Colors.red
-        ..strokeWidth = 1
-        ..style = PaintingStyle.stroke;
-      canvas.drawLine(Offset(touchX!, 0), Offset(touchX!, size.height), paint);
+      paint.color = touchLineColor;
+      paint.strokeWidth = 1;
+      // canvas.drawLine(Offset(touchX!, 0), Offset(touchX!, size.height), paint);
+      canvas.drawLine(Offset(touchX!, maxY), Offset(touchX!, minY), paint);
     }
+  }
+
+  _drawShadow(
+      {required Canvas canvas,
+      required double fontSize,
+      required double value,
+      required double x,
+      required double y,
+      required TextPainter textPainter,
+      required double valueTextYOffset}) {
+    // Draw white edge for the text
+    final shadowStyle = TextStyle(
+      color: Colors.white,
+      fontSize: fontSize,
+      fontWeight: valueFontWeight,
+    );
+    final textSpan = TextSpan(
+        text: value.toStringAsFixed(fractionDigits), style: shadowStyle);
+    final textPainterShadow =
+        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    textPainterShadow.layout();
+
+    double offset = 2;
+
+    final List<ui.Shadow> shadows = [
+      ui.Shadow(
+          color: Colors.white,
+          offset: ui.Offset(-offset, -offset),
+          blurRadius: 3),
+      ui.Shadow(
+          color: Colors.white,
+          offset: ui.Offset(offset, -offset),
+          blurRadius: 3),
+      ui.Shadow(
+          color: Colors.white,
+          offset: ui.Offset(offset, offset),
+          blurRadius: 3),
+      ui.Shadow(
+          color: Colors.white,
+          offset: ui.Offset(-offset, offset),
+          blurRadius: 3),
+    ];
+    for (final ui.Shadow shadow in shadows) {
+      final textPainterWithShadow = TextPainter(
+        text: TextSpan(
+          text: textSpan.text,
+          style: shadowStyle.copyWith(shadows: [shadow]),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      textPainterWithShadow.layout();
+      textPainterWithShadow.paint(canvas,
+          Offset(x - textPainter.width * 0.5, y - fontSize - valueTextYOffset));
+    }
+
+// Draw the text
+    textPainter.paint(canvas,
+        Offset(x - textPainter.width * 0.5, y - fontSize - valueTextYOffset));
   }
 
   @override
