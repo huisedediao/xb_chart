@@ -265,7 +265,10 @@ class XBDataPainter extends CustomPainter {
       TextPainter textPainter = TextPainter(
         text: TextSpan(
           text: lastValue.toStringAsFixed(fractionDigits),
-          style: TextStyle(color: model.color, fontSize: fontSize),
+          style: TextStyle(
+              color: model.color,
+              fontSize: fontSize,
+              fontWeight: valueFontWeight),
         ),
         textDirection: TextDirection.ltr,
       );
