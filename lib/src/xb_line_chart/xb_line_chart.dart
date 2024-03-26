@@ -151,23 +151,25 @@ class _XBLineChartState extends State<XBLineChart> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onTap,
-      child: Container(
-        // color: Colors.yellow,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: _painterHeight,
-              // color: Colors.purple,
-              child: Row(
-                children: [_leftTitles(), Expanded(child: _datas())],
-              ),
+    return Container(
+      // color: Colors.yellow,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: _painterHeight,
+            // color: Colors.purple,
+            child: Row(
+              children: [
+                _leftTitles(),
+                Expanded(
+                    child:
+                        GestureDetector(onTap: widget.onTap, child: _datas()))
+              ],
             ),
-            _names()
-          ],
-        ),
+          ),
+          _names()
+        ],
       ),
     );
   }
