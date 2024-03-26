@@ -337,25 +337,26 @@ class XBDataPainter extends CustomPainter {
         TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainterShadow.layout();
 
-    double offset = 2;
+    double offset = 1;
+    double blurRadius = 5;
 
     final List<ui.Shadow> shadows = [
       ui.Shadow(
           color: Colors.white,
           offset: ui.Offset(-offset, -offset),
-          blurRadius: 3),
+          blurRadius: blurRadius),
       ui.Shadow(
           color: Colors.white,
           offset: ui.Offset(offset, -offset),
-          blurRadius: 3),
+          blurRadius: blurRadius),
       ui.Shadow(
           color: Colors.white,
           offset: ui.Offset(offset, offset),
-          blurRadius: 3),
+          blurRadius: blurRadius),
       ui.Shadow(
           color: Colors.white,
           offset: ui.Offset(-offset, offset),
-          blurRadius: 3),
+          blurRadius: blurRadius),
     ];
     for (final ui.Shadow shadow in shadows) {
       final textPainterWithShadow = TextPainter(
