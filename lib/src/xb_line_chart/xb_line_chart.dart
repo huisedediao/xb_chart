@@ -58,6 +58,9 @@ class XBLineChart extends StatefulWidget {
   /// 折线中数值的字重
   final FontWeight valueFontWeight;
 
+  /// 点击的回调
+  final VoidCallback? onTap;
+
   XBLineChart(
       {this.yTitleCount = 8,
       this.yTitleWidth = 50,
@@ -75,6 +78,7 @@ class XBLineChart extends StatefulWidget {
       this.circleRadius = 2.5,
       this.valueFontSize = 12,
       this.valueFontWeight = FontWeight.w600,
+      this.onTap,
       super.key})
       : assert(yTitleCount > 1, "XBLineChart error：左侧标题数至少为2个") {
     if (models.isEmpty) {
@@ -147,20 +151,23 @@ class _XBLineChartState extends State<XBLineChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // color: Colors.yellow,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            height: _painterHeight,
-            // color: Colors.purple,
-            child: Row(
-              children: [_leftTitles(), Expanded(child: _datas())],
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: Container(
+        // color: Colors.yellow,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: _painterHeight,
+              // color: Colors.purple,
+              child: Row(
+                children: [_leftTitles(), Expanded(child: _datas())],
+              ),
             ),
-          ),
-          _names()
-        ],
+            _names()
+          ],
+        ),
       ),
     );
   }

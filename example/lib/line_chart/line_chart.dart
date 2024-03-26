@@ -30,7 +30,13 @@ class LineChart extends XBPage<LineChartVM> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: XBLineChart(
-                      yTitleCount: 8, xTitles: vm.xTitles, models: vm.models),
+                    yTitleCount: 8,
+                    xTitles: vm.xTitles,
+                    models: vm.models,
+                    onTap: () {
+                      toast("长按显示详情");
+                    },
+                  ),
                 ),
                 XBButton(
                     onTap: () {
