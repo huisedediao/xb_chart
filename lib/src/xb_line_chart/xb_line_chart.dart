@@ -244,30 +244,32 @@ class _XBLineChartState extends State<XBLineChart> {
                   // color: getRandomColor(),
                   width: w,
                   height: h,
-                  child: XBLineChartData(
-                    leftTitleCount: widget.yTitleCount,
-                    xTitles: widget.xTitles,
-                    models: widget.models,
-                    valueRangeMax: leftTitleContents.first,
-                    valueRangeMin: leftTitleContents.last,
-                    valueLineCount: leftTitleContents.length,
-                    painterWidth: w,
-                    painterHeight: h,
-                    dayGap: dayGap,
-                    fractionDigits: widget.fractionDigits,
-                    datasExtensionSpace: datasExtensionSpace,
-                    touchLineColor: widget.touchLineColor,
-                    lineWidth: widget.lineWidth,
-                    circleRadius: widget.circleRadius,
-                    valueFontSize: widget.valueFontSize,
-                    valueFontWeight: widget.valueFontWeight,
-                    onHover: (int? hoverIndex, double dx) {
-                      // print("globalDx:$dx,hoverIndex:$hoverIndex");
-                      _hoverIndex = hoverIndex;
-                      setState(() {
-                        _hoverDx = dx - _controller.offset;
-                      });
-                    },
+                  child: ClipRRect(
+                    child: XBLineChartData(
+                      leftTitleCount: widget.yTitleCount,
+                      xTitles: widget.xTitles,
+                      models: widget.models,
+                      valueRangeMax: leftTitleContents.first,
+                      valueRangeMin: leftTitleContents.last,
+                      valueLineCount: leftTitleContents.length,
+                      painterWidth: w,
+                      painterHeight: h,
+                      dayGap: dayGap,
+                      fractionDigits: widget.fractionDigits,
+                      datasExtensionSpace: datasExtensionSpace,
+                      touchLineColor: widget.touchLineColor,
+                      lineWidth: widget.lineWidth,
+                      circleRadius: widget.circleRadius,
+                      valueFontSize: widget.valueFontSize,
+                      valueFontWeight: widget.valueFontWeight,
+                      onHover: (int? hoverIndex, double dx) {
+                        // print("globalDx:$dx,hoverIndex:$hoverIndex");
+                        _hoverIndex = hoverIndex;
+                        setState(() {
+                          _hoverDx = dx - _controller.offset;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
