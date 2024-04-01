@@ -202,7 +202,7 @@ class XBDataPainter extends CustomPainter {
       paint.color = model.color;
       double fontSize = valueFontSize;
       double valuePointW = circleRadius;
-      double valueTextYOffset = 5;
+      double valueTextYOffset = 7;
       for (int i = 0; i < model.values.length - 1; i++) {
         final value = model.values[i];
         final double x = i * stepX + datasExtensionSpace;
