@@ -201,6 +201,11 @@ class _XBLineChartState extends State<XBLineChart> {
     );
   }
 
+  // Random color generator
+  Color getRandomColor() {
+    return Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
+  }
+
   Widget _datas() {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
@@ -236,7 +241,7 @@ class _XBLineChartState extends State<XBLineChart> {
                 controller: _controller,
                 scrollDirection: Axis.horizontal,
                 child: Container(
-                  // color: Colors.blue.withAlpha(10),
+                  // color: getRandomColor(),
                   width: w,
                   height: h,
                   child: XBLineChartData(

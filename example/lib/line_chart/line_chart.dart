@@ -25,32 +25,56 @@ class LineChart extends XBPage<LineChartVM> {
           borderRadius: BorderRadius.circular(10),
           child: Container(
             color: Colors.white,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: XBLineChart(
-                    yTitleCount: 8,
-                    xTitles: vm.xTitles,
-                    models: vm.models,
-                    onTap: () {
-                      toast("长按显示详情");
-                    },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: XBLineChart(
+                      yTitleCount: 8,
+                      xTitles: vm.xTitles,
+                      models: vm.models,
+                      onTap: () {
+                        toast("长按显示详情");
+                      },
+                    ),
                   ),
-                ),
-                XBButton(
-                    onTap: () {
-                      vm.selectedIndex = vm.selectedIndex == 0 ? 1 : 0;
-                      vm.notify();
-                    },
-                    child: Container(
-                      color: Colors.red,
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text("切换数据"),
-                      ),
-                    ))
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: XBLineChart(
+                      yTitleCount: 8,
+                      xTitles: vm.xTitles,
+                      models: vm.models,
+                      onTap: () {
+                        toast("长按显示详情");
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: XBLineChart(
+                      yTitleCount: 8,
+                      xTitles: vm.xTitles,
+                      models: vm.models,
+                      onTap: () {
+                        toast("长按显示详情");
+                      },
+                    ),
+                  ),
+                  XBButton(
+                      onTap: () {
+                        vm.selectedIndex = vm.selectedIndex == 0 ? 1 : 0;
+                        vm.notify();
+                      },
+                      child: Container(
+                        color: Colors.red,
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("切换数据"),
+                        ),
+                      ))
+                ],
+              ),
             ),
           ),
         ),

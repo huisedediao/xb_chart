@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'xb_line_chart_config.dart';
 import 'xb_line_chart_model.dart';
 import 'xb_line_chart_x_title.dart';
-import 'dart:ui' as ui;
 
 class XBLineChartData extends StatefulWidget {
   final int leftTitleCount;
@@ -106,23 +105,25 @@ class _XBLineChartDataState extends State<XBLineChartData> {
           alignment: Alignment.center,
           child: Container(
             // color: Colors.orange,
-            child: CustomPaint(
-              size: Size(widget.painterWidth, widget.painterHeight),
-              painter: XBDataPainter(
-                  models: widget.models,
-                  max: widget.valueRangeMax,
-                  min: widget.valueRangeMin,
-                  lineCount: widget.valueLineCount,
-                  xTitles: widget.xTitles,
-                  touchX: _touchX,
-                  dayGap: widget.dayGap,
-                  datasExtensionSpace: widget.datasExtensionSpace,
-                  fractionDigits: widget.fractionDigits,
-                  touchLineColor: widget.touchLineColor,
-                  lineWidth: widget.lineWidth,
-                  circleRadius: widget.circleRadius,
-                  valueFontSize: widget.valueFontSize,
-                  valueFontWeight: widget.valueFontWeight),
+            child: RepaintBoundary(
+              child: CustomPaint(
+                size: Size(widget.painterWidth, widget.painterHeight),
+                painter: XBDataPainter(
+                    models: widget.models,
+                    max: widget.valueRangeMax,
+                    min: widget.valueRangeMin,
+                    lineCount: widget.valueLineCount,
+                    xTitles: widget.xTitles,
+                    touchX: _touchX,
+                    dayGap: widget.dayGap,
+                    datasExtensionSpace: widget.datasExtensionSpace,
+                    fractionDigits: widget.fractionDigits,
+                    touchLineColor: widget.touchLineColor,
+                    lineWidth: widget.lineWidth,
+                    circleRadius: widget.circleRadius,
+                    valueFontSize: widget.valueFontSize,
+                    valueFontWeight: widget.valueFontWeight),
+              ),
             ),
           ),
         ),
@@ -239,6 +240,15 @@ class XBDataPainter extends CustomPainter {
           textDirection: TextDirection.ltr,
         );
         textPainter.layout();
+
+        _drawShadow(
+            canvas: canvas,
+            x: x,
+            y: y,
+            textPainter: textPainter,
+            fontSize: fontSize,
+            valueTextYOffset: valueTextYOffset);
+
         textPainter.paint(
             canvas,
             Offset(
@@ -246,14 +256,6 @@ class XBDataPainter extends CustomPainter {
                 y -
                     fontSize -
                     valueTextYOffset)); // Adjust the offset according to your needs
-        _drawShadow(
-            canvas: canvas,
-            fontSize: fontSize,
-            value: value,
-            x: x,
-            y: y,
-            textPainter: textPainter,
-            valueTextYOffset: valueTextYOffset);
       }
       final lastValue = model.values.last;
       final double lastX =
@@ -273,19 +275,19 @@ class XBDataPainter extends CustomPainter {
         textDirection: TextDirection.ltr,
       );
       textPainter.layout();
+
+      _drawShadow(
+          canvas: canvas,
+          x: lastX,
+          y: lastY,
+          textPainter: textPainter,
+          fontSize: fontSize,
+          valueTextYOffset: valueTextYOffset);
+
       textPainter.paint(
           canvas,
           Offset(lastX - textPainter.width * 0.5,
               lastY - fontSize - valueTextYOffset));
-
-      _drawShadow(
-          canvas: canvas,
-          fontSize: fontSize,
-          value: lastValue,
-          x: lastX,
-          y: lastY,
-          textPainter: textPainter,
-          valueTextYOffset: valueTextYOffset);
     }
 
     // Draw dates
@@ -312,72 +314,62 @@ class XBDataPainter extends CustomPainter {
     if (touchX != null) {
       paint.color = touchLineColor;
       paint.strokeWidth = 1;
-      // canvas.drawLine(Offset(touchX!, 0), Offset(touchX!, size.height), paint);
       canvas.drawLine(Offset(touchX!, maxY), Offset(touchX!, minY), paint);
     }
   }
 
   _drawShadow(
       {required Canvas canvas,
-      required double fontSize,
-      required double value,
       required double x,
       required double y,
       required TextPainter textPainter,
+      required double fontSize,
       required double valueTextYOffset}) {
-    // Draw white edge for the text
-    final shadowStyle = TextStyle(
-      color: Colors.white,
-      fontSize: fontSize,
-      fontWeight: valueFontWeight,
-    );
-    final textSpan = TextSpan(
-        text: value.toStringAsFixed(fractionDigits), style: shadowStyle);
-    final textPainterShadow =
-        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
-    textPainterShadow.layout();
+    final offset =
+        Offset(x - textPainter.width * 0.5, y - fontSize - valueTextYOffset);
+    final rect = offset & textPainter.size;
+    final path = Path()..addRect(rect);
 
-    double offset = 1;
-    double blurRadius = 5;
-
-    final List<ui.Shadow> shadows = [
-      ui.Shadow(
-          color: Colors.white,
-          offset: ui.Offset(-offset, -offset),
-          blurRadius: blurRadius),
-      ui.Shadow(
-          color: Colors.white,
-          offset: ui.Offset(offset, -offset),
-          blurRadius: blurRadius),
-      ui.Shadow(
-          color: Colors.white,
-          offset: ui.Offset(offset, offset),
-          blurRadius: blurRadius),
-      ui.Shadow(
-          color: Colors.white,
-          offset: ui.Offset(-offset, offset),
-          blurRadius: blurRadius),
-    ];
-    for (final ui.Shadow shadow in shadows) {
-      final textPainterWithShadow = TextPainter(
-        text: TextSpan(
-          text: textSpan.text,
-          style: shadowStyle.copyWith(shadows: [shadow]),
-        ),
-        textDirection: TextDirection.ltr,
-      );
-      textPainterWithShadow.layout();
-      textPainterWithShadow.paint(canvas,
-          Offset(x - textPainter.width * 0.5, y - fontSize - valueTextYOffset));
-    }
-
-// Draw the text
-    textPainter.paint(canvas,
-        Offset(x - textPainter.width * 0.5, y - fontSize - valueTextYOffset));
+    // 创建一个白色的画笔，应用模糊效果
+    final tempPaint = Paint()
+      ..color = Colors.white
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.0);
+    canvas.drawPath(path, tempPaint);
   }
 
   @override
   bool shouldRepaint(XBDataPainter oldDelegate) {
-    return true;
+    final ret = oldDelegate.max != max ||
+        oldDelegate.min != min ||
+        oldDelegate.lineCount != lineCount ||
+        oldDelegate.touchX != touchX ||
+        oldDelegate.dayGap != dayGap ||
+        oldDelegate.datasExtensionSpace != datasExtensionSpace ||
+        oldDelegate.fractionDigits != fractionDigits ||
+        oldDelegate.touchLineColor != touchLineColor ||
+        oldDelegate.lineWidth != lineWidth ||
+        oldDelegate.circleRadius != circleRadius ||
+        oldDelegate.valueFontSize != valueFontSize ||
+        oldDelegate.valueFontWeight != valueFontWeight;
+    if (ret == true) {
+      return ret;
+    }
+    if (oldDelegate.models.length != models.length ||
+        oldDelegate.xTitles.length != xTitles.length) {
+      return true;
+    }
+
+    for (int i = 0; i < models.length; i++) {
+      if (oldDelegate.models[i] != models[i]) {
+        return true;
+      }
+    }
+
+    for (int i = 0; i < xTitles.length; i++) {
+      if (oldDelegate.xTitles[i] != xTitles[i]) {
+        return true;
+      }
+    }
+    return false;
   }
 }
