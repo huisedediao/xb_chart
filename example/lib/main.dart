@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      navigatorObservers: [navigatorObserver],
+      navigatorObservers: [xbRouteObserver],
       home: const XBScaffold(
           imgPrefixs: ["assets/images/default/", "assets/images/custom/"],
           child: Home()),
