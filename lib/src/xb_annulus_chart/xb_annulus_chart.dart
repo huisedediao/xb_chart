@@ -102,10 +102,11 @@ class _XBAnnulusChartState extends State<XBAnnulusChart> {
                   _touchPosition = position;
                   if (_selectedModel != null) {
                     if (widget.hoverBuilder != null) {
-                      builderRet = widget.hoverBuilder!(_selectedModel);
-                    } else {
                       builderRet =
-                          xbAnnulusChartDefHoverBuilder(_selectedModel);
+                          widget.hoverBuilder!(_selectedModel, _dataWidth);
+                    } else {
+                      builderRet = xbAnnulusChartDefHoverBuilder(
+                          _selectedModel, _dataWidth);
                     }
                     _hoverTopPosition =
                         _hoverTop(_touchPosition?.dy ?? 0, builderRet.height);

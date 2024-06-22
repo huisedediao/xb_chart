@@ -9,7 +9,7 @@ typedef XBAnnulusOnSelected = void Function(
     XBAnnulusChartModel? model, Offset position);
 
 typedef XBAnnulusChartHoverBuilder = XBAnnulusChartHoverBuilderRet Function(
-    XBAnnulusChartModel? model);
+    XBAnnulusChartModel? model, double maxWidth);
 
 const double xbAnnulusChartNameMarkWidth = 5;
 
@@ -84,11 +84,14 @@ Widget xbAnnulusChartDefBottomBuilder(List<XBAnnulusChartModel> models) {
 }
 
 XBAnnulusChartHoverBuilderRet xbAnnulusChartDefHoverBuilder(
-    XBAnnulusChartModel? model) {
+    XBAnnulusChartModel? model, double maxWidth) {
   final content = xbAnnulusChartHoverContent(model);
   final contentSize =
       xbAnnulusChartTextSize(content, xbAnnulusChartDefHoverContentStyle);
-  final width = contentSize.width + xbAnnulusChartDefHoverPaddingH * 2;
+  double width = contentSize.width + xbAnnulusChartDefHoverPaddingH * 2;
+  if (width > maxWidth) {
+    width = maxWidth;
+  }
   final height = contentSize.height + xbAnnulusChartDefHoverPaddingV * 2;
   return XBAnnulusChartHoverBuilderRet(
       hover: ClipRRect(
@@ -98,9 +101,15 @@ XBAnnulusChartHoverBuilderRet xbAnnulusChartDefHoverBuilder(
           width: width,
           height: height,
           color: xbAnnulusChartDefHoverColor,
-          child: Text(
-            content,
-            style: xbAnnulusChartDefHoverContentStyle,
+          child: Padding(
+            padding: const EdgeInsets.only(
+                left: xbAnnulusChartDefHoverPaddingH,
+                right: xbAnnulusChartDefHoverPaddingH),
+            child: Text(
+              content,
+              style: xbAnnulusChartDefHoverContentStyle,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ),
       ),
