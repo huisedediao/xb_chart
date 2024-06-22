@@ -9,16 +9,33 @@ import 'xb_annulus_chart_model.dart';
 class XBAnnulusChart extends StatefulWidget {
   /// 环形的半径，如果不传，则为控件宽度的四分之一
   final double? annulusRadius;
+
+  /// 数据源
   final List<XBAnnulusChartModel> models;
+
+  /// 底部的widget
   final XBAnnulusBottomWidgetBuilder? bottomWidgetBuilder;
+
+  /// 点击以后展示的浮动标签
   final XBAnnulusChartHoverBuilder? hoverBuilder;
+
+  /// hover箭头的颜色
   final Color? hoverColor;
+
+  /// 环形的线宽
+  final double? strokeWidth;
+
+  /// 是否可以选中单独的部分
+  final bool canSelected;
+
   const XBAnnulusChart(
       {required this.models,
       this.hoverBuilder,
       this.hoverColor,
       this.bottomWidgetBuilder,
       this.annulusRadius,
+      this.strokeWidth,
+      this.canSelected = true,
       super.key})
       : assert(
             (hoverBuilder == null && hoverColor == null) ||
@@ -70,7 +87,6 @@ class _XBAnnulusChartState extends State<XBAnnulusChart> {
             ? widget.annulusRadius! * 2
             : constraints.maxWidth * 0.5;
         _dataWidth = w;
-
         return Stack(
           alignment: Alignment.center,
           children: [
@@ -78,6 +94,8 @@ class _XBAnnulusChartState extends State<XBAnnulusChart> {
               width: w,
               height: w,
               models: widget.models,
+              strokeWidth: widget.strokeWidth ?? 40,
+              selectedDistance: widget.canSelected ? 10 : 0,
               onSelected: (model, position) {
                 setState(() {
                   _selectedModel = model;
@@ -101,7 +119,7 @@ class _XBAnnulusChartState extends State<XBAnnulusChart> {
                 });
               },
             ),
-            if (_selectedModel != null)
+            if (widget.canSelected && _selectedModel != null)
               AnimatedPositioned(
                   duration: const Duration(milliseconds: 300),
                   top: _hoverTopPosition,

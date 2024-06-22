@@ -11,16 +11,18 @@ class XBAnnulusChartArrow extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size(width, height), //指定画布大小
-      painter: XBTrianglePainter(),
+      painter: XBAnnulusChartArrowPainter(color: color),
     );
   }
 }
 
-class XBTrianglePainter extends CustomPainter {
+class XBAnnulusChartArrowPainter extends CustomPainter {
+  final Color? color;
+  const XBAnnulusChartArrowPainter({this.color});
   @override
   void paint(Canvas canvas, Size size) {
     var paint = Paint()
-      ..color = Colors.black
+      ..color = color ?? Colors.black
       ..style = PaintingStyle.fill;
 
     var path = Path();
