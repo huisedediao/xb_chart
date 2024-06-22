@@ -103,8 +103,8 @@ XBAnnulusChartHoverBuilderRet xbAnnulusChartDefHoverBuilder(
           color: xbAnnulusChartDefHoverColor,
           child: Padding(
             padding: const EdgeInsets.only(
-                left: xbAnnulusChartDefHoverPaddingH,
-                right: xbAnnulusChartDefHoverPaddingH),
+                left: xbAnnulusChartDefHoverPaddingH - 3,
+                right: xbAnnulusChartDefHoverPaddingH - 3),
             child: Text(
               content,
               style: xbAnnulusChartDefHoverContentStyle,

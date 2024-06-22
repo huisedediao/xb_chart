@@ -20,12 +20,13 @@ class AnnulusChart extends XBPage<AnnulusChartVM> {
   Widget buildPage(vm, BuildContext context) {
     final models = [
       XBAnnulusChartModel(
-          name: '张益达张益达张益达张益达张益达张益达张益达', color: Colors.orange, value: 10),
-      XBAnnulusChartModel(name: 'snack', color: Colors.purple, value: 10),
-      XBAnnulusChartModel(name: '吕小布', color: Colors.green, value: 10),
-      XBAnnulusChartModel(name: '曾小贤', color: Colors.blue, value: 10),
-      XBAnnulusChartModel(name: '吴彦祖', color: Colors.greenAccent, value: 10),
-      XBAnnulusChartModel(name: '张震', color: Colors.red, value: 10)
+          name: '张益达张益达张益达张益达张益达张益达张益达 10 次', color: Colors.orange, value: 10),
+      XBAnnulusChartModel(name: 'snack ', color: Colors.purple, value: 10),
+      XBAnnulusChartModel(name: '吕小布 10 次', color: Colors.green, value: 10),
+      XBAnnulusChartModel(name: '曾小贤 10 次', color: Colors.blue, value: 10),
+      XBAnnulusChartModel(
+          name: '吴彦祖 10 次', color: Colors.greenAccent, value: 10),
+      XBAnnulusChartModel(name: '张震 10 次', color: Colors.red, value: 10)
     ];
 
     return Center(
