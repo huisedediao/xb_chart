@@ -35,10 +35,10 @@ class XBHistogramChartItem extends StatelessWidget {
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                   colors: [
-                    beginColor ?? Color.fromRGBO(225, 255, 237, 1),
-                    endColor ?? Color.fromRGBO(63, 85, 249, 1)
+                    beginColor ?? const Color.fromRGBO(225, 255, 237, 1),
+                    endColor ?? const Color.fromRGBO(63, 85, 249, 1)
                   ],
-                  stops: [0.0, 1.0],
+                  stops: const [0.0, 1.0],
                 ),
               ),
             ),
