@@ -139,8 +139,10 @@ class _XBLineChartState extends State<XBLineChart> {
   @override
   void initState() {
     super.initState();
+    calculateDatasExtensionSpace();
+  }
 
-    /// 计算datasExtensionSpace
+  void calculateDatasExtensionSpace() {
     for (var tempTitle in widget.xTitles) {
       final tempStrLenHalf = xbLineChartCaculateTextWidth(
               tempTitle.text, xbLineChartDateStrStyle) *
@@ -148,6 +150,35 @@ class _XBLineChartState extends State<XBLineChart> {
       if (datasExtensionSpace < tempStrLenHalf) {
         datasExtensionSpace = tempStrLenHalf;
       }
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant XBLineChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    /// 如果xTitles发生变化，则需要重新计算datasExtensionSpace
+    /// 需要考虑xTitles的length和内容
+    bool isNeedCalculate = widget.xTitles != oldWidget.xTitles ||
+        widget.xTitles.length != oldWidget.xTitles.length;
+    if (!isNeedCalculate) {
+      for (var elementNew in widget.xTitles) {
+        bool isExist = false;
+        for (var elementOld in oldWidget.xTitles) {
+          if (elementNew.text == elementOld.text) {
+            isExist = true;
+            break;
+          }
+        }
+        if (!isExist) {
+          isNeedCalculate = true;
+          break;
+        }
+      }
+    }
+    if (isNeedCalculate) {
+      calculateDatasExtensionSpace();
+      setState(() {});
     }
   }
 
