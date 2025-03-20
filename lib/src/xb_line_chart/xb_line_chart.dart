@@ -60,9 +60,6 @@ class XBLineChart extends StatefulWidget {
   /// 折线中数值的字重
   final FontWeight valueFontWeight;
 
-  /// 点击的回调
-  final VoidCallback? onTap;
-
   XBLineChart(
       {this.yTitleCount = 8,
       this.yTitleWidth = 50,
@@ -80,7 +77,6 @@ class XBLineChart extends StatefulWidget {
       this.circleRadius = 2.5,
       this.valueFontSize = 12,
       this.valueFontWeight = FontWeight.w600,
-      this.onTap,
       super.key})
       : assert(yTitleCount > 1, "XBLineChart error：左侧标题数至少为2个") {
     if (models.isEmpty) {
@@ -99,6 +95,8 @@ class _XBLineChartState extends State<XBLineChart> {
   late double _maxDataWidth;
   double _hoverDx = 0;
   int? _hoverIndex;
+
+  GlobalKey<XBLineChartDataState> _dataKey = GlobalKey();
 
   /// 每天的间隔，根据外部传入的数值进行计算
   double dayGap = 30;
@@ -193,12 +191,7 @@ class _XBLineChartState extends State<XBLineChart> {
             height: _painterHeight,
             // color: Colors.purple,
             child: Row(
-              children: [
-                _leftTitles(),
-                Expanded(
-                    child:
-                        GestureDetector(onTap: widget.onTap, child: _datas()))
-              ],
+              children: [_leftTitles(), Expanded(child: _datas())],
             ),
           ),
           _names()
@@ -279,6 +272,7 @@ class _XBLineChartState extends State<XBLineChart> {
                   height: h,
                   child: ClipRRect(
                     child: XBLineChartData(
+                      key: _dataKey,
                       leftTitleCount: widget.yTitleCount,
                       xTitles: widget.xTitles,
                       models: widget.models,
@@ -311,7 +305,11 @@ class _XBLineChartState extends State<XBLineChart> {
               Positioned(
                 top: 0,
                 left: _hoverLeft(ret.width),
-                child: ret.hover,
+                child: GestureDetector(
+                    onTap: () {
+                      _dataKey.currentState?.hideHover();
+                    },
+                    child: ret.hover),
               )
             else
               const SizedBox()

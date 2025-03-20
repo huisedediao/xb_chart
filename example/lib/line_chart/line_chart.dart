@@ -34,9 +34,6 @@ class LineChart extends XBPage<LineChartVM> {
                       yTitleCount: 8,
                       xTitles: vm.xTitles,
                       models: vm.models,
-                      onTap: () {
-                        toast("长按显示详情");
-                      },
                     ),
                   ),
                   Padding(
@@ -45,9 +42,6 @@ class LineChart extends XBPage<LineChartVM> {
                       yTitleCount: 8,
                       xTitles: vm.xTitles,
                       models: vm.models,
-                      onTap: () {
-                        toast("长按显示详情");
-                      },
                     ),
                   ),
                   Padding(
@@ -56,9 +50,6 @@ class LineChart extends XBPage<LineChartVM> {
                       yTitleCount: 8,
                       xTitles: vm.xTitles,
                       models: vm.models,
-                      onTap: () {
-                        toast("长按显示详情");
-                      },
                     ),
                   ),
                   XBButton(

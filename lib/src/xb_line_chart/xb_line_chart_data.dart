@@ -45,31 +45,52 @@ class XBLineChartData extends StatefulWidget {
       super.key});
 
   @override
-  State<XBLineChartData> createState() => _XBLineChartDataState();
+  State<XBLineChartData> createState() => XBLineChartDataState();
 }
 
-class _XBLineChartDataState extends State<XBLineChartData> {
-  bool _isOnLongPress = false;
+String _indexKey = 'index';
+String _nearestXKey = 'nearestX';
+
+class XBLineChartDataState extends State<XBLineChartData> {
   double? _touchX;
 
-  int? _findModelIndex() {
-    if (_touchX == null) return null;
-    double range = 5;
-    double rangeLeft = _touchX! - range;
-    double rangeRight = _touchX! + range;
+  Map<String, dynamic> _findModelIndex(double? touchX) {
+    if (touchX == null) {
+      return {
+        _indexKey: null,
+        _nearestXKey: null,
+      };
+    }
+    int nearestIndex = 0;
+    double nearestDistance = 0;
+    double nearestX = 0;
     for (int i = 0; i < xbLineChartMaxValueCount(widget.models); i++) {
       double x = i * widget.dayGap + widget.datasExtensionSpace;
-      if (x > rangeLeft && x < rangeRight) {
-        return i;
+      if (nearestDistance == 0) {
+        nearestDistance = (x - touchX).abs();
+        nearestIndex = i;
+        nearestX = x;
+      } else {
+        double tempDistance = (x - touchX).abs();
+        if (tempDistance < nearestDistance) {
+          nearestDistance = tempDistance;
+          nearestIndex = i;
+          nearestX = x;
+        }
       }
     }
-    return null;
+    return {
+      _indexKey: nearestIndex,
+      _nearestXKey: nearestX,
+    };
   }
 
-  updateHover(double localDx) {
+  Offset? _localPosition;
+
+  void hideHover() {
     setState(() {
-      _touchX = localDx;
-      widget.onHover(_findModelIndex(), localDx);
+      _touchX = null;
+      widget.onHover(null, 0);
     });
   }
 
@@ -77,28 +98,23 @@ class _XBLineChartDataState extends State<XBLineChartData> {
   Widget build(BuildContext context) {
     return Listener(
       onPointerMove: (event) {
-        if (_isOnLongPress == false) return;
-        updateHover(event.localPosition.dx);
+        hideHover();
       },
       child: GestureDetector(
-        onLongPressStart: (details) {
-          // print(details.localPosition.dx);
-          _isOnLongPress = true;
-          updateHover(details.localPosition.dx);
+        onTap: () {
+          if (_localPosition != null) {
+            setState(() {
+              final findResult = _findModelIndex(_localPosition!.dx);
+              _touchX = findResult[_nearestXKey];
+              widget.onHover(findResult[_indexKey], _touchX ?? 0);
+            });
+          }
         },
-        onLongPressCancel: () {
-          _isOnLongPress = false;
-          setState(() {
-            _touchX = null;
-            widget.onHover(_findModelIndex(), 0);
-          });
+        onPanDown: (details) {
+          _localPosition = details.localPosition;
         },
-        onLongPressUp: () {
-          _isOnLongPress = false;
-          setState(() {
-            _touchX = null;
-            widget.onHover(_findModelIndex(), 0);
-          });
+        onTapUp: (details) {
+          hideHover();
         },
         child: Container(
           // color: colors.randColor,
