@@ -34,9 +34,14 @@ class HistogramChart extends XBPage<HistogramChartVM> {
           child: Container(
             color: Colors.white,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: XBHistogramChart(yModels: models),
-            ),
+                padding: const EdgeInsets.all(8.0),
+                child: XBHistogramChart(
+                  yModels: models,
+                  // isNeedRightText: true,
+                  rightTextGetter: (p0, p1) {
+                    return "${p0.toStringAsFixed(0)}%";
+                  },
+                )),
           ),
         ),
       ),

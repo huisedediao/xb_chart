@@ -2,9 +2,10 @@
 
 import 'dart:math';
 import 'package:flutter/material.dart';
-
 import 'xb_histogram_chart_item.dart';
 import 'xb_histogram_chart_y_model.dart';
+
+typedef XBHistogramChartRightTextGetter<T, S, R> = T Function(S, R);
 
 // ignore: must_be_immutable
 class XBHistogramChart extends StatelessWidget {
@@ -29,6 +30,17 @@ class XBHistogramChart extends StatelessWidget {
   /// 左侧文字和图表的距离
   final double leftTitlePaddingRight;
 
+  /// 是否需要右侧文字
+  final bool isNeedRightText;
+
+  /// 右侧文字
+  /// 返回值、当前值、最大值
+  final XBHistogramChartRightTextGetter<String, double, double>?
+      rightTextGetter;
+
+  /// 右侧文字样式
+  final TextStyle? rightTextStyle;
+
   /// 底部文字，会自动生成
   late List<String> xAxisTitlesList;
 
@@ -38,6 +50,8 @@ class XBHistogramChart extends StatelessWidget {
   /// 底部文字的宽度，会自动计算
   late double bottomTitleWidth;
 
+  final TextStyle? bottomTitleStyle;
+
   XBHistogramChart(
       {required this.yModels,
       this.xAxisTitleCount = 4,
@@ -46,6 +60,10 @@ class XBHistogramChart extends StatelessWidget {
       this.leftTitlePaddingRight = 10,
       this.leftTitleWidth = 50,
       this.maxBottomTitleWidth = 100,
+      this.rightTextGetter,
+      this.rightTextStyle,
+      this.bottomTitleStyle,
+      this.isNeedRightText = false,
       super.key}) {
     if (yModels.isEmpty) {
       yModels.add(XBHistogramChartYModel(name: "暂无数据", value: 0));
@@ -74,35 +92,38 @@ class XBHistogramChart extends StatelessWidget {
       child: Container(
         // color: Colors.blue,
         child: FractionallySizedBox(
-          widthFactor: 1.0,
-          child: Container(
-            // color: Colors.amber,
-            alignment: Alignment.topLeft,
-            height: _topTotalHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(xAxisTitlesList.length, (index) {
-                return Visibility(
-                  maintainAnimation: true,
-                  maintainSize: true,
-                  maintainState: true,
-                  // visible: true,
-                  visible: index != 0,
-                  child: Container(
-                    // color: Colors.purple,
-                    width: bottomTitleWidth,
-                    height: _topTotalHeight,
-                    alignment: Alignment.center,
-                    child: Container(
-                      width: 1,
-                      color: Colors.grey.withAlpha(30),
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ),
-        ),
+            widthFactor: 1.0,
+            child: Container(
+              // color: Colors.amber,
+              alignment: Alignment.topLeft,
+              height: _topTotalHeight,
+              child: Padding(
+                padding: EdgeInsets.only(
+                    right: isNeedRightText ? bottomTitleWidth * 0.5 : 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(xAxisTitlesList.length, (index) {
+                    return Visibility(
+                      maintainAnimation: true,
+                      maintainSize: true,
+                      maintainState: true,
+                      // visible: true,
+                      visible: index != 0,
+                      child: Container(
+                        // color: Colors.purple,
+                        width: bottomTitleWidth,
+                        height: _topTotalHeight,
+                        alignment: Alignment.center,
+                        child: Container(
+                          width: 1,
+                          color: Colors.grey.withAlpha(30),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            )),
       ),
     );
   }
@@ -149,7 +170,7 @@ class XBHistogramChart extends StatelessWidget {
   TextStyle get _leftTitleStyle => TextStyle(fontSize: _fontSize);
 
   TextStyle get _bottomTitleStyle =>
-      const TextStyle(color: Colors.grey, fontSize: 14);
+      bottomTitleStyle ?? const TextStyle(color: Colors.grey, fontSize: 14);
 
   double get _topTotalHeight {
     return yModels.length * itemHeigth + (yModels.length - 1) * itemGap;
@@ -175,11 +196,14 @@ class XBHistogramChart extends StatelessWidget {
           return Padding(
             padding: EdgeInsets.only(
                 bottom: (index == yModels.length - 1) ? 0 : itemGap),
-            child: Padding(
-              padding: EdgeInsets.only(right: bottomTitleWidth * 0.5),
-              child: XBHistogramChartItem(
-                  value: yModel.value / maxValue, height: itemHeigth),
-            ),
+            child: XBHistogramChartItem(
+                paddingRight: bottomTitleWidth * (isNeedRightText ? 1 : 0.5),
+                value: yModel.value / maxValue,
+                height: itemHeigth,
+                text: isNeedRightText
+                    ? rightTextGetter?.call(yModel.value, maxValue)
+                    : "",
+                textStyle: rightTextStyle),
           );
         }),
       ),
@@ -209,7 +233,10 @@ class XBHistogramChart extends StatelessWidget {
                 ),
               );
             }),
-          ))
+          )),
+          SizedBox(
+            width: isNeedRightText ? bottomTitleWidth * 0.5 : 0,
+          )
         ],
       ),
     );
