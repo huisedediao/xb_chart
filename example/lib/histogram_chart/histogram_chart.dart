@@ -38,9 +38,8 @@ class HistogramChart extends XBPage<HistogramChartVM> {
                 child: XBHistogramChart(
                   yModels: models,
                   isNeedRightText: true,
-                  rightTextFit: 40,
                   rightTextGetter: (p0, p1) {
-                    return "100.00%";
+                    return "10000000.00%";
                   },
                 )),
           ),

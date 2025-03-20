@@ -33,13 +33,16 @@ class XBHistogramChart extends StatelessWidget {
   /// 是否需要右侧文字
   final bool isNeedRightText;
 
-  /// 右侧文字的适应宽度
-  final double rightTextFit;
-
   /// 右侧文字
   /// 返回值、当前值、最大值
   final XBHistogramChartRightTextGetter<String, double, double>?
       rightTextGetter;
+
+  /// 右侧文字宽度，会自动生成
+  late double rightTextWidth;
+
+  /// 右侧文字左边距
+  final double? rightTextLeftPadding;
 
   /// 右侧文字样式
   final TextStyle? rightTextStyle;
@@ -67,13 +70,14 @@ class XBHistogramChart extends StatelessWidget {
       this.rightTextStyle,
       this.bottomTitleStyle,
       this.isNeedRightText = false,
-      this.rightTextFit = 40,
+      this.rightTextLeftPadding,
       super.key}) {
     if (yModels.isEmpty) {
       yModels.add(XBHistogramChartYModel(name: "暂无数据", value: 0));
     }
     xAxisTitlesList = caculateXAxisTitlesList();
     bottomTitleWidth = caculateMaxBottomTitleWidth();
+    rightTextWidth = caculateMaxRightTextWidth();
   }
 
   @override
@@ -102,8 +106,8 @@ class XBHistogramChart extends StatelessWidget {
               alignment: Alignment.topLeft,
               height: _topTotalHeight,
               child: Padding(
-                padding: EdgeInsets.only(
-                    right: isNeedRightText ? _rightTextWidth : 0),
+                padding:
+                    EdgeInsets.only(right: isNeedRightText ? _rightTextFit : 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(xAxisTitlesList.length, (index) {
@@ -201,25 +205,29 @@ class XBHistogramChart extends StatelessWidget {
             padding: EdgeInsets.only(
                 bottom: (index == yModels.length - 1) ? 0 : itemGap),
             child: XBHistogramChartItem(
-                paddingRight: bottomTitleWidth * 0.5 + _rightTextWidth,
+                rightTextLeftPadding: _rightTextLeftPadding,
+                paddingRight: bottomTitleWidth * 0.5 + _rightTextFit,
                 value: yModel.value / maxValue,
                 height: itemHeigth,
                 text: isNeedRightText
                     ? rightTextGetter?.call(yModel.value, maxValue)
                     : "",
-                textStyle: rightTextStyle),
+                textStyle: _rightTextStyle),
           );
         }),
       ),
     ));
   }
 
-  double get _rightTextWidth {
+  double get _rightTextFit {
     if (isNeedRightText) {
-      return rightTextFit;
+      return rightTextWidth - bottomTitleWidth * 0.5;
     }
     return 0;
   }
+
+  TextStyle get _rightTextStyle =>
+      rightTextStyle ?? const TextStyle(color: Colors.grey, fontSize: 10);
 
   _bottom() {
     final xAxisTitles = xAxisTitlesList;
@@ -246,7 +254,7 @@ class XBHistogramChart extends StatelessWidget {
             }),
           )),
           SizedBox(
-            width: isNeedRightText ? _rightTextWidth : 0,
+            width: isNeedRightText ? _rightTextFit : 0,
           )
         ],
       ),
@@ -273,6 +281,24 @@ class XBHistogramChart extends StatelessWidget {
         List.generate(xAxisTitleCount + 1, (index) => "${index * unit}");
     return ret;
   }
+
+  double caculateMaxRightTextWidth() {
+    if (!isNeedRightText) {
+      return 0;
+    }
+    double max = 0;
+    for (var element in yModels) {
+      final tempW = caculateTitleWidth(
+          rightTextGetter?.call(element.value, maxValue) ?? "",
+          _rightTextStyle);
+      if (tempW > max) {
+        max = tempW;
+      }
+    }
+    return max + _rightTextLeftPadding + 2;
+  }
+
+  double get _rightTextLeftPadding => rightTextLeftPadding ?? 4;
 
   double caculateMaxBottomTitleWidth() {
     double max = 0;

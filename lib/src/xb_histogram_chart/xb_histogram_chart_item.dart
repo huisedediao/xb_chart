@@ -9,6 +9,7 @@ class XBHistogramChartItem extends StatelessWidget {
   final double paddingRight;
   final String? text;
   final TextStyle? textStyle;
+  final double rightTextLeftPadding;
   const XBHistogramChartItem(
       {required this.value,
       required this.height,
@@ -17,6 +18,7 @@ class XBHistogramChartItem extends StatelessWidget {
       required this.paddingRight,
       this.text,
       this.textStyle,
+      required this.rightTextLeftPadding,
       super.key});
 
   @override
@@ -67,11 +69,10 @@ class XBHistogramChartItem extends StatelessWidget {
                 // color: Colors.green,
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 4),
+                  padding: EdgeInsets.only(left: rightTextLeftPadding),
                   child: Text(
                     text ?? "${value * 100}%",
-                    style: textStyle ??
-                        const TextStyle(color: Colors.grey, fontSize: 10),
+                    style: textStyle,
                   ),
                 ),
               ))
