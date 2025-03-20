@@ -19,12 +19,12 @@ class HistogramChart extends XBPage<HistogramChartVM> {
   @override
   Widget buildPage(vm, BuildContext context) {
     final models = [
-      XBHistogramChartYModel(name: '张益达', value: 9999),
-      XBHistogramChartYModel(name: 'snack', value: 9000),
-      XBHistogramChartYModel(name: '吕小布', value: 8000),
-      XBHistogramChartYModel(name: '曾小贤', value: 7000),
-      XBHistogramChartYModel(name: '吴彦祖', value: 6000),
-      XBHistogramChartYModel(name: '张震', value: 5000)
+      XBHistogramChartYModel(name: '张益达', value: 2),
+      XBHistogramChartYModel(name: 'snack', value: 3),
+      XBHistogramChartYModel(name: '吕小布', value: 4),
+      XBHistogramChartYModel(name: '曾小贤', value: 5),
+      XBHistogramChartYModel(name: '吴彦祖', value: 6),
+      XBHistogramChartYModel(name: '张震', value: 8000)
     ];
     return Center(
       child: Padding(
@@ -37,9 +37,10 @@ class HistogramChart extends XBPage<HistogramChartVM> {
                 padding: const EdgeInsets.all(8.0),
                 child: XBHistogramChart(
                   yModels: models,
-                  // isNeedRightText: true,
+                  isNeedRightText: true,
+                  rightTextFit: 40,
                   rightTextGetter: (p0, p1) {
-                    return "${p0.toStringAsFixed(0)}%";
+                    return "100.00%";
                   },
                 )),
           ),

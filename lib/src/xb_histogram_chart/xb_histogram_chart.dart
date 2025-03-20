@@ -33,6 +33,9 @@ class XBHistogramChart extends StatelessWidget {
   /// 是否需要右侧文字
   final bool isNeedRightText;
 
+  /// 右侧文字的适应宽度
+  final double rightTextFit;
+
   /// 右侧文字
   /// 返回值、当前值、最大值
   final XBHistogramChartRightTextGetter<String, double, double>?
@@ -64,6 +67,7 @@ class XBHistogramChart extends StatelessWidget {
       this.rightTextStyle,
       this.bottomTitleStyle,
       this.isNeedRightText = false,
+      this.rightTextFit = 40,
       super.key}) {
     if (yModels.isEmpty) {
       yModels.add(XBHistogramChartYModel(name: "暂无数据", value: 0));
@@ -99,7 +103,7 @@ class XBHistogramChart extends StatelessWidget {
               height: _topTotalHeight,
               child: Padding(
                 padding: EdgeInsets.only(
-                    right: isNeedRightText ? bottomTitleWidth * 0.5 : 0),
+                    right: isNeedRightText ? _rightTextWidth : 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(xAxisTitlesList.length, (index) {
@@ -197,7 +201,7 @@ class XBHistogramChart extends StatelessWidget {
             padding: EdgeInsets.only(
                 bottom: (index == yModels.length - 1) ? 0 : itemGap),
             child: XBHistogramChartItem(
-                paddingRight: bottomTitleWidth * (isNeedRightText ? 1 : 0.5),
+                paddingRight: bottomTitleWidth * 0.5 + _rightTextWidth,
                 value: yModel.value / maxValue,
                 height: itemHeigth,
                 text: isNeedRightText
@@ -208,6 +212,13 @@ class XBHistogramChart extends StatelessWidget {
         }),
       ),
     ));
+  }
+
+  double get _rightTextWidth {
+    if (isNeedRightText) {
+      return rightTextFit;
+    }
+    return 0;
   }
 
   _bottom() {
@@ -235,7 +246,7 @@ class XBHistogramChart extends StatelessWidget {
             }),
           )),
           SizedBox(
-            width: isNeedRightText ? bottomTitleWidth * 0.5 : 0,
+            width: isNeedRightText ? _rightTextWidth : 0,
           )
         ],
       ),
