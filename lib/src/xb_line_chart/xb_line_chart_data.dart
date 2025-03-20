@@ -2,9 +2,7 @@
 
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'xb_line_chart_config.dart';
-import 'xb_line_chart_model.dart';
-import 'xb_line_chart_x_title.dart';
+import 'package:xb_chart/xb_chart.dart';
 
 class XBLineChartData extends StatefulWidget {
   final int leftTitleCount;
@@ -18,12 +16,16 @@ class XBLineChartData extends StatefulWidget {
   final XBLineChartOnHover onHover;
   final double dayGap;
   final double datasExtensionSpace;
-  final int fractionDigits;
   final Color touchLineColor;
   final double lineWidth;
   final double circleRadius;
-  final double valueFontSize;
-  final FontWeight valueFontWeight;
+
+  /// 折线点对应的文本
+  final XBLineChartTextGetter? pointTextGetter;
+
+  /// 折线点对应的文本的样式
+  final TextStyle? pointTextStyle;
+
   const XBLineChartData(
       {required this.leftTitleCount,
       required this.xTitles,
@@ -36,12 +38,11 @@ class XBLineChartData extends StatefulWidget {
       required this.onHover,
       required this.dayGap,
       required this.datasExtensionSpace,
-      required this.fractionDigits,
       required this.touchLineColor,
       required this.lineWidth,
       required this.circleRadius,
-      required this.valueFontSize,
-      required this.valueFontWeight,
+      this.pointTextGetter,
+      this.pointTextStyle,
       super.key});
 
   @override
@@ -125,6 +126,8 @@ class XBLineChartDataState extends State<XBLineChartData> {
               child: CustomPaint(
                 size: Size(widget.painterWidth, widget.painterHeight),
                 painter: XBDataPainter(
+                    pointTextGetter: widget.pointTextGetter,
+                    pointTextStyle: widget.pointTextStyle,
                     models: widget.models,
                     max: widget.valueRangeMax,
                     min: widget.valueRangeMin,
@@ -133,12 +136,9 @@ class XBLineChartDataState extends State<XBLineChartData> {
                     touchX: _touchX,
                     dayGap: widget.dayGap,
                     datasExtensionSpace: widget.datasExtensionSpace,
-                    fractionDigits: widget.fractionDigits,
                     touchLineColor: widget.touchLineColor,
                     lineWidth: widget.lineWidth,
-                    circleRadius: widget.circleRadius,
-                    valueFontSize: widget.valueFontSize,
-                    valueFontWeight: widget.valueFontWeight),
+                    circleRadius: widget.circleRadius),
               ),
             ),
           ),
@@ -157,12 +157,12 @@ class XBDataPainter extends CustomPainter {
   final double? touchX;
   final double dayGap;
   final double datasExtensionSpace;
-  final int fractionDigits;
   final Color touchLineColor;
   final double lineWidth;
   final double circleRadius;
-  final double valueFontSize;
-  final FontWeight valueFontWeight;
+  final XBLineChartTextGetter? pointTextGetter;
+  final TextStyle? pointTextStyle;
+
   XBDataPainter(
       {required this.models,
       required this.max,
@@ -172,12 +172,11 @@ class XBDataPainter extends CustomPainter {
       required this.touchX,
       required this.dayGap,
       required this.datasExtensionSpace,
-      required this.fractionDigits,
       required this.touchLineColor,
       required this.lineWidth,
       required this.circleRadius,
-      required this.valueFontSize,
-      required this.valueFontWeight});
+      this.pointTextGetter,
+      this.pointTextStyle});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -216,7 +215,7 @@ class XBDataPainter extends CustomPainter {
     // Draw values
     for (final model in models) {
       paint.color = model.color;
-      double fontSize = valueFontSize;
+      double fontSize = 12;
       double valuePointW = circleRadius;
       double valueTextYOffset = 7;
       for (int i = 0; i < model.values.length - 1; i++) {
@@ -247,11 +246,12 @@ class XBDataPainter extends CustomPainter {
         // Draw value text
         TextPainter textPainter = TextPainter(
           text: TextSpan(
-            text: value.toStringAsFixed(fractionDigits),
-            style: TextStyle(
-                color: model.color,
-                fontSize: fontSize,
-                fontWeight: valueFontWeight),
+            text: pointTextGetter?.call(value) ?? value.toStringAsFixed(0),
+            style: pointTextStyle?.copyWith(color: model.color) ??
+                TextStyle(
+                    color: model.color,
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w600),
           ),
           textDirection: TextDirection.ltr,
         );
@@ -282,11 +282,13 @@ class XBDataPainter extends CustomPainter {
 
       TextPainter textPainter = TextPainter(
         text: TextSpan(
-          text: lastValue.toStringAsFixed(fractionDigits),
-          style: TextStyle(
-              color: model.color,
-              fontSize: fontSize,
-              fontWeight: valueFontWeight),
+          text:
+              pointTextGetter?.call(lastValue) ?? lastValue.toStringAsFixed(0),
+          style: pointTextStyle ??
+              TextStyle(
+                  color: model.color,
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w600),
         ),
         textDirection: TextDirection.ltr,
       );
@@ -355,37 +357,36 @@ class XBDataPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(XBDataPainter oldDelegate) {
-    final ret = oldDelegate.max != max ||
-        oldDelegate.min != min ||
-        oldDelegate.lineCount != lineCount ||
-        oldDelegate.touchX != touchX ||
-        oldDelegate.dayGap != dayGap ||
-        oldDelegate.datasExtensionSpace != datasExtensionSpace ||
-        oldDelegate.fractionDigits != fractionDigits ||
-        oldDelegate.touchLineColor != touchLineColor ||
-        oldDelegate.lineWidth != lineWidth ||
-        oldDelegate.circleRadius != circleRadius ||
-        oldDelegate.valueFontSize != valueFontSize ||
-        oldDelegate.valueFontWeight != valueFontWeight;
-    if (ret == true) {
-      return ret;
-    }
-    if (oldDelegate.models.length != models.length ||
-        oldDelegate.xTitles.length != xTitles.length) {
-      return true;
-    }
+    // final ret = oldDelegate.max != max ||
+    //     oldDelegate.min != min ||
+    //     oldDelegate.lineCount != lineCount ||
+    //     oldDelegate.touchX != touchX ||
+    //     oldDelegate.dayGap != dayGap ||
+    //     oldDelegate.datasExtensionSpace != datasExtensionSpace ||
+    //     oldDelegate.touchLineColor != touchLineColor ||
+    //     oldDelegate.lineWidth != lineWidth ||
+    //     oldDelegate.circleRadius != circleRadius ||
+    //     oldDelegate.valueFontSize != valueFontSize ||
+    //     oldDelegate.valueFontWeight != valueFontWeight;
+    // if (ret == true) {
+    //   return ret;
+    // }
+    // if (oldDelegate.models.length != models.length ||
+    //     oldDelegate.xTitles.length != xTitles.length) {
+    //   return true;
+    // }
 
-    for (int i = 0; i < models.length; i++) {
-      if (oldDelegate.models[i] != models[i]) {
-        return true;
-      }
-    }
+    // for (int i = 0; i < models.length; i++) {
+    //   if (oldDelegate.models[i] != models[i]) {
+    //     return true;
+    //   }
+    // }
 
-    for (int i = 0; i < xTitles.length; i++) {
-      if (oldDelegate.xTitles[i] != xTitles[i]) {
-        return true;
-      }
-    }
-    return false;
+    // for (int i = 0; i < xTitles.length; i++) {
+    //   if (oldDelegate.xTitles[i] != xTitles[i]) {
+    //     return true;
+    //   }
+    // }
+    return true;
   }
 }

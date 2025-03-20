@@ -9,6 +9,8 @@ typedef XBLineChartOnHover = void Function(int? hoverIndex, double hoverDx);
 typedef XBLineChartHoverBuilder = XBLineChartHoverBuilderRet Function(
     int? hoverIndex, double hoverDx, double maxHeight);
 
+typedef XBLineChartTextGetter = String Function(double value);
+
 enum XBLineChartNameLayout { scroll, wrap }
 
 /// 底部标题位置调整的参数
@@ -84,11 +86,13 @@ String xbLineChartDateStr(DateTime beginDate, int offset) {
 }
 
 XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
-    int? hoverIndex,
-    double hoverDx,
-    double maxHeight,
-    String dateStr,
-    List<XBLineChartModel> models) {
+  int? hoverIndex,
+  double hoverDx,
+  double maxHeight,
+  String dateStr,
+  List<XBLineChartModel> models,
+  XBLineChartTextGetter? valueTextGetter,
+) {
   if (hoverIndex == null) {
     return XBLineChartHoverBuilderRet(hover: Container(), width: 0);
   }
@@ -97,8 +101,10 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
   TextStyle dateStrStyle = const TextStyle(color: Colors.white, fontSize: 16);
   double maxWidth = xbLineChartCaculateTextWidth(dateStr, dateStrStyle);
   for (var model in models) {
-    double tempWidth =
-        _hoverItemWidth(name: model.name, value: model.values[hoverIndex]);
+    double tempWidth = _hoverItemWidth(
+        name: model.name,
+        value: model.values[hoverIndex],
+        valueTextGetter: valueTextGetter);
     if (tempWidth > maxWidth) {
       maxWidth = tempWidth;
     }
@@ -132,7 +138,10 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
                         final model = models[index];
                         final value = model.values[hoverIndex];
                         return _hoverItem(
-                            color: model.color, name: model.name, value: value);
+                            color: model.color,
+                            name: model.name,
+                            value: value,
+                            valueTextGetter: valueTextGetter);
                       }),
                     ),
                   ),
@@ -145,17 +154,27 @@ XBLineChartHoverBuilderRet xbLineChartDefHoverBuilder(
       width: maxWidth);
 }
 
-double _hoverItemWidth({required String name, required double value}) {
+double _hoverItemWidth(
+    {required String name,
+    required double value,
+    XBLineChartTextGetter? valueTextGetter}) {
   return xbLineChartNameMarkWidth +
       xbLineChartNameMarkGap +
       xbLineChartCaculateTextWidth(name, xbLineChartNameWidgetTextStyle) +
       xbLineChartDefHoverItemGap +
-      xbLineChartCaculateTextWidth(
-          value.toStringAsFixed(0), xbLineChartNameWidgetTextStyle);
+      xbLineChartCaculateTextWidth(_hoverItemText(value, valueTextGetter),
+          xbLineChartNameWidgetTextStyle);
+}
+
+String _hoverItemText(double value, XBLineChartTextGetter? valueTextGetter) {
+  return valueTextGetter?.call(value) ?? value.toStringAsFixed(0);
 }
 
 Widget _hoverItem(
-    {required Color color, required String name, required double value}) {
+    {required Color color,
+    required String name,
+    required double value,
+    XBLineChartTextGetter? valueTextGetter}) {
   return Row(
     children: [
       XBLineChartNameWidget(
@@ -167,7 +186,7 @@ Widget _hoverItem(
         width: xbLineChartDefHoverItemGap,
       ),
       Text(
-        value.toStringAsFixed(0),
+        _hoverItemText(value, valueTextGetter),
         style: TextStyle(
             color: Colors.white,
             fontSize: xbLineChartNameWidgetTextStyle.fontSize),

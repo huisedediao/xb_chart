@@ -34,6 +34,14 @@ class LineChart extends XBPage<LineChartVM> {
                       yTitleCount: 8,
                       xTitles: vm.xTitles,
                       models: vm.models,
+                      pointTextGetter: (value) =>
+                          "${value.toStringAsFixed(2)}%",
+                      pointTextStyle: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      // hoverValueTextGetter: (value) =>
+                      //     "${value.toStringAsFixed(2)}%",
                     ),
                   ),
                   Padding(

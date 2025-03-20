@@ -2,7 +2,6 @@
 
 import 'dart:math';
 import 'package:flutter/material.dart';
-
 import 'xb_line_chart_config.dart';
 import 'xb_line_chart_data.dart';
 import 'xb_line_chart_hover_builder_ret.dart';
@@ -30,6 +29,9 @@ class XBLineChart extends StatefulWidget {
   /// 悬浮窗的样式构建函数
   final XBLineChartHoverBuilder? hoverBuilder;
 
+  /// 悬浮窗的文本构建函数
+  final XBLineChartTextGetter? hoverValueTextGetter;
+
   /// 是否需要底部的名字部分
   final bool needNames;
 
@@ -42,9 +44,6 @@ class XBLineChart extends StatefulWidget {
   /// 左侧标题和图表的间距，默认10
   final double leftTitlePaddingRight;
 
-  /// 折线图中的值，取几位小数，默认0
-  final int fractionDigits;
-
   /// 触摸时展示的线条的颜色
   final Color touchLineColor;
 
@@ -54,11 +53,11 @@ class XBLineChart extends StatefulWidget {
   /// 折线圆点的半径
   final double circleRadius;
 
-  /// 折线中数值的字体大小
-  final double valueFontSize;
+  /// 折线点对应的文本
+  final XBLineChartTextGetter? pointTextGetter;
 
-  /// 折线中数值的字重
-  final FontWeight valueFontWeight;
+  /// 折线点对应的文本的样式
+  final TextStyle? pointTextStyle;
 
   XBLineChart(
       {this.yTitleCount = 8,
@@ -67,16 +66,16 @@ class XBLineChart extends StatefulWidget {
       required this.models,
       this.pointCountPerPage = 7,
       this.hoverBuilder,
+      this.hoverValueTextGetter,
       this.namesPaddingLeft,
       this.leftTitlePaddingRight = 10,
       this.needNames = true,
       this.namesLayout = XBLineChartNameLayout.wrap,
-      this.fractionDigits = 0,
       this.touchLineColor = Colors.grey,
       this.lineWidth = 2.5,
       this.circleRadius = 2.5,
-      this.valueFontSize = 12,
-      this.valueFontWeight = FontWeight.w600,
+      this.pointTextGetter,
+      this.pointTextStyle,
       super.key})
       : assert(yTitleCount > 1, "XBLineChart error：左侧标题数至少为2个") {
     if (models.isEmpty) {
@@ -96,7 +95,7 @@ class _XBLineChartState extends State<XBLineChart> {
   double _hoverDx = 0;
   int? _hoverIndex;
 
-  GlobalKey<XBLineChartDataState> _dataKey = GlobalKey();
+  final GlobalKey<XBLineChartDataState> _dataKey = GlobalKey();
 
   /// 每天的间隔，根据外部传入的数值进行计算
   double dayGap = 30;
@@ -255,7 +254,8 @@ class _XBLineChartState extends State<XBLineChart> {
                 _hoverDx,
                 constraints.maxHeight,
                 widget.xTitles[_hoverIndex!].text,
-                widget.models);
+                widget.models,
+                widget.hoverValueTextGetter);
           }
         }
 
@@ -273,6 +273,8 @@ class _XBLineChartState extends State<XBLineChart> {
                   child: ClipRRect(
                     child: XBLineChartData(
                       key: _dataKey,
+                      pointTextGetter: widget.pointTextGetter,
+                      pointTextStyle: widget.pointTextStyle,
                       leftTitleCount: widget.yTitleCount,
                       xTitles: widget.xTitles,
                       models: widget.models,
@@ -282,13 +284,10 @@ class _XBLineChartState extends State<XBLineChart> {
                       painterWidth: w,
                       painterHeight: h,
                       dayGap: dayGap,
-                      fractionDigits: widget.fractionDigits,
                       datasExtensionSpace: datasExtensionSpace,
                       touchLineColor: widget.touchLineColor,
                       lineWidth: widget.lineWidth,
                       circleRadius: widget.circleRadius,
-                      valueFontSize: widget.valueFontSize,
-                      valueFontWeight: widget.valueFontWeight,
                       onHover: (int? hoverIndex, double dx) {
                         // print("globalDx:$dx,hoverIndex:$hoverIndex");
                         _hoverIndex = hoverIndex;
