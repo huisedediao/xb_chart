@@ -38,9 +38,6 @@ class XBHistogramChart extends StatelessWidget {
   final XBHistogramChartRightTextGetter<String, double, double>?
       rightTextGetter;
 
-  /// 右侧文字宽度，会自动生成
-  late double rightTextWidth;
-
   /// 右侧文字左边距
   final double? rightTextLeftPadding;
 
@@ -77,18 +74,53 @@ class XBHistogramChart extends StatelessWidget {
     }
     xAxisTitlesList = caculateXAxisTitlesList();
     bottomTitleWidth = caculateMaxBottomTitleWidth();
-    rightTextWidth = caculateMaxRightTextWidth();
+  }
+
+  double _rightTextFit = 0;
+
+  caculateRightTextFit(double maxWidth) {
+    double rightTextWidth = caculateMaxRightTextWidth();
+    if (isNeedRightText) {
+      double topUnderWidth = maxWidth - _bottomLeading;
+      double histogramWidth = topUnderWidth - bottomTitleWidth;
+      double maxValueW = 0;
+      double maxValuePercent = 0;
+      for (var element in yModels) {
+        final tempW = histogramWidth * element.value / maxValue;
+        if (tempW > maxValueW) {
+          maxValueW = tempW;
+          maxValuePercent = element.value / maxValue;
+        }
+      }
+      if ((maxValueW + _rightTextLeftPadding + rightTextWidth) >
+          histogramWidth + bottomTitleWidth * 0.5) {
+        double newMaxValueW = maxValueW -
+            (maxValueW +
+                _rightTextLeftPadding +
+                rightTextWidth -
+                histogramWidth -
+                bottomTitleWidth * 0.5);
+        double newHistogramWidth = newMaxValueW / maxValuePercent;
+        _rightTextFit = histogramWidth - newHistogramWidth;
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Stack(children: [_topUnder(), _top()]),
-        _bottom()
-      ],
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      caculateRightTextFit(constraints.maxWidth);
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(children: [
+            _topUnder(),
+            _top(),
+          ]),
+          _bottom()
+        ],
+      );
+    });
   }
 
   double get _bottomLeading =>
@@ -97,42 +129,44 @@ class XBHistogramChart extends StatelessWidget {
   _topUnder() {
     return Padding(
       padding: EdgeInsets.only(left: _bottomLeading),
-      child: Container(
-        // color: Colors.blue,
-        child: FractionallySizedBox(
-            widthFactor: 1.0,
-            child: Container(
-              // color: Colors.amber,
-              alignment: Alignment.topLeft,
-              height: _topTotalHeight,
-              child: Padding(
-                padding:
-                    EdgeInsets.only(right: isNeedRightText ? _rightTextFit : 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(xAxisTitlesList.length, (index) {
-                    return Visibility(
-                      maintainAnimation: true,
-                      maintainSize: true,
-                      maintainState: true,
-                      // visible: true,
-                      visible: index != 0,
-                      child: Container(
-                        // color: Colors.purple,
-                        width: bottomTitleWidth,
-                        height: _topTotalHeight,
-                        alignment: Alignment.center,
+      child: LayoutBuilder(builder: (context, constraints) {
+        return Container(
+          // color: Colors.red.withAlpha(100),
+          child: FractionallySizedBox(
+              widthFactor: 1.0,
+              child: Container(
+                // color: Colors.amber,
+                alignment: Alignment.topLeft,
+                height: _topTotalHeight,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      right: isNeedRightText ? _rightTextFit : 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(xAxisTitlesList.length, (index) {
+                      return Visibility(
+                        maintainAnimation: true,
+                        maintainSize: true,
+                        maintainState: true,
+                        // visible: true,
+                        visible: index != 0,
                         child: Container(
-                          width: 1,
-                          color: Colors.grey.withAlpha(30),
+                          // color: Colors.purple,
+                          width: bottomTitleWidth,
+                          height: _topTotalHeight,
+                          alignment: Alignment.center,
+                          child: Container(
+                            width: 1,
+                            color: Colors.grey.withAlpha(30),
+                          ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    }),
+                  ),
                 ),
-              ),
-            )),
-      ),
+              )),
+        );
+      }),
     );
   }
 
@@ -217,13 +251,6 @@ class XBHistogramChart extends StatelessWidget {
         }),
       ),
     ));
-  }
-
-  double get _rightTextFit {
-    if (isNeedRightText) {
-      return rightTextWidth - bottomTitleWidth * 0.5;
-    }
-    return 0;
   }
 
   TextStyle get _rightTextStyle =>

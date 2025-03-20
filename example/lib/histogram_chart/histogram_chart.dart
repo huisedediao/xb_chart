@@ -21,10 +21,10 @@ class HistogramChart extends XBPage<HistogramChartVM> {
     final models = [
       XBHistogramChartYModel(name: '张益达', value: 2),
       XBHistogramChartYModel(name: 'snack', value: 3),
-      XBHistogramChartYModel(name: '吕小布', value: 4),
-      XBHistogramChartYModel(name: '曾小贤', value: 5),
-      XBHistogramChartYModel(name: '吴彦祖', value: 6),
-      XBHistogramChartYModel(name: '张震', value: 8000)
+      XBHistogramChartYModel(name: '吕小布', value: 39),
+      XBHistogramChartYModel(name: '曾小贤', value: 26),
+      XBHistogramChartYModel(name: '吴彦祖', value: 13),
+      XBHistogramChartYModel(name: '张震', value: 50)
     ];
     return Center(
       child: Padding(
@@ -39,7 +39,7 @@ class HistogramChart extends XBPage<HistogramChartVM> {
                   yModels: models,
                   isNeedRightText: true,
                   rightTextGetter: (p0, p1) {
-                    return "10000000.00%";
+                    return "100000.00%";
                   },
                 )),
           ),
